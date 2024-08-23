@@ -24,7 +24,7 @@ const Header: React.FC = () => {
 
   return (
     <header
-      className={`fixed top-0 w-full bg-darkGray text-white flex justify-between items-center p-2 md:px-14 z-50 transition-opacity duration-300 ${
+      className={`fixed top-0 w-full bg-darkGray text-white flex justify-between items-center p-4 md:px-20 z-50 transition-opacity duration-300 ${
         isScrolled ? 'opacity-85' : 'opacity-100'
       }`}
     >
@@ -57,7 +57,7 @@ const Header: React.FC = () => {
       </nav>
 
       {/* Right Section: Icons */}
-      <div className="flex space-x-6">
+      <div className="flex space-x-8">
         <button className="hover:text-gray2">
           <FaSearch size={14} />
         </button>
