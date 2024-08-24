@@ -24,7 +24,7 @@ const Header: React.FC = () => {
 
   return (
     <header
-      className={`fixed top-0 w-full bg-darkGray text-white flex justify-between items-center p-2 md:px-14 z-50 transition-opacity duration-300 ${
+      className={`fixed top-0 w-full bg-darkGray text-white flex justify-between items-center p-4 md:px-20 z-50 transition-opacity duration-300 ${
         isScrolled ? 'opacity-85' : 'opacity-100'
       }`}
     >
@@ -35,9 +35,9 @@ const Header: React.FC = () => {
 
       {/* Middle Section: Navigation Links */}
       <nav
-        className={`fixed top-0 right-0 h-full w-3/4 bg-darkGray text-white transform ${
+        className={`fixed top-0 right-0 h-full w-full bg-darkGray text-white transform ${
           isMenuOpen ? 'translate-x-0' : 'translate-x-full'
-        } transition-transform duration-300 ease-in-out flex flex-col items-center space-y-6 md:static md:flex md:flex-row md:space-x-8 md:space-y-0 md:w-auto md:translate-x-0`}
+        } transition-transform duration-300 ease-in-out flex flex-col items-center space-y-20 md:static md:flex md:flex-row md:space-x-8 md:space-y-0 md:w-auto md:translate-x-0`}
       >
         {/* Conditionally Render Close Button */}
           {isMenuOpen && (
@@ -45,19 +45,19 @@ const Header: React.FC = () => {
             className="self-end p-4 text-white hover:text-gray-300"
             onClick={toggleMenu}
           >
-            <FaTimes  size={14} />
+            <FaTimes  size={28} />
           </button>
         )}
-        <a href="#" className="hover:text-gray2 text-white text-xs font-medium">New & Featured</a>
-        <a href="#" className="hover:text-gray2 text-white text-xs font-medium">Create Your Own</a>
-        <a href="#" className="hover:text-gray2 text-white text-xs font-medium">Men</a>
-        <a href="#" className="hover:text-gray2 text-white text-xs font-medium">Women</a>
-        <a href="#" className="hover:text-gray2 text-white text-xs font-medium">Kids</a>
-        <a href="#" className="hover:text-gray2 text-white text-xs font-medium">Sale</a>
+        <a href="#" className="hover:text-gray2 text-white text-xl md:text-xs font-medium">New & Featured</a>
+        <a href="#" className="hover:text-gray2 text-white text-xl md:text-xs font-medium">Create Your Own</a>
+        <a href="#" className="hover:text-gray2 text-white text-xl md:text-xs font-medium">Men</a>
+        <a href="#" className="hover:text-gray2 text-white text-xl md:text-xs font-medium">Women</a>
+        <a href="#" className="hover:text-gray2 text-white text-xl md:text-xs font-medium">Kids</a>
+        <a href="#" className="hover:text-gray2 text-white text-xl md:text-xs font-medium">Sale</a>
       </nav>
 
       {/* Right Section: Icons */}
-      <div className="flex space-x-6">
+      <div className="flex space-x-4 md:space-x-8">
         <button className="hover:text-gray2">
           <FaSearch size={14} />
         </button>
