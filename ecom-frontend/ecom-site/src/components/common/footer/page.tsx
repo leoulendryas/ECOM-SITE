@@ -1,16 +1,30 @@
-import React from 'react';
-import { FaYoutube, FaTwitter, FaInstagram, FaFacebook } from 'react-icons/fa';
+import React, { useState } from 'react';
+import { FaYoutube, FaTwitter, FaInstagram, FaFacebook, FaPlus, FaMinus } from 'react-icons/fa';
 
 const Footer: React.FC = () => {
+  const [supportOpen, setSupportOpen] = useState(false);
+  const [companyOpen, setCompanyOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+
   return (
-    <footer className="bg-whiter py-8 w-full mt-auto">
+    <footer className="bg-white py-8 w-full mt-auto">
       <div className="container mx-auto px-4">
         {/* Top Section: Links */}
         <div className="flex flex-col md:flex-row justify-between items-start mb-6">
           {/* Support Links */}
-          <div className="mb-6 md:mb-0">
-            <h4 className="font-semibold text-lg mb-2">SUPPORT</h4>
-            <ul className="space-y-2 text-sm text-darkGray font-medium">
+          <div className="mb-6 md:mb-0 w-full md:w-auto">
+            <div className="flex justify-between items-center md:block">
+              <h4 className="font-semibold text-lg mb-2">SUPPORT</h4>
+              <button
+                className="md:hidden text-sm font-medium"
+                onClick={() => setSupportOpen(!supportOpen)}
+              >
+                {supportOpen ? <FaMinus /> : <FaPlus />}
+              </button>
+            </div>
+            <ul
+              className={`space-y-2 text-sm text-darkGray font-medium md:block ${supportOpen ? 'block' : 'hidden'}`}
+            >
               <li><a href="#" className="hover:underline">FAQ</a></li>
               <li><a href="#" className="hover:underline">Payment options</a></li>
               <li><a href="#" className="hover:underline">Delivery information</a></li>
@@ -20,9 +34,19 @@ const Footer: React.FC = () => {
           </div>
 
           {/* Company Links */}
-          <div className="mb-6 md:mb-0">
-            <h4 className="font-semibold text-lg mb-2">COMPANY</h4>
-            <ul className="space-y-2 text-sm text-darkGray font-medium">
+          <div className="mb-6 md:mb-0 w-full md:w-auto">
+            <div className="flex justify-between items-center md:block">
+              <h4 className="font-semibold text-lg mb-2">COMPANY</h4>
+              <button
+                className="md:hidden text-sm font-medium"
+                onClick={() => setCompanyOpen(!companyOpen)}
+              >
+                {companyOpen ? <FaMinus /> : <FaPlus />}
+              </button>
+            </div>
+            <ul
+              className={`space-y-2 text-sm text-darkGray font-medium md:block ${companyOpen ? 'block' : 'hidden'}`}
+            >
               <li><a href="#" className="hover:underline">About brand</a></li>
               <li><a href="#" className="hover:underline">Blog</a></li>
               <li><a href="#" className="hover:underline">Investors</a></li>
@@ -30,9 +54,19 @@ const Footer: React.FC = () => {
           </div>
 
           {/* My Account Links */}
-          <div className="mb-6 md:mb-0">
-            <h4 className="font-semibold text-lg mb-2">MY ACCOUNT</h4>
-            <ul className="space-y-2 text-sm text-darkGray font-medium">
+          <div className="mb-6 md:mb-0 w-full md:w-auto">
+            <div className="flex justify-between items-center md:block">
+              <h4 className="font-semibold text-lg mb-2">MY ACCOUNT</h4>
+              <button
+                className="md:hidden text-sm font-medium"
+                onClick={() => setAccountOpen(!accountOpen)}
+              >
+                {accountOpen ? <FaMinus /> : <FaPlus />}
+              </button>
+            </div>
+            <ul
+              className={`space-y-2 text-sm text-darkGray font-medium md:block ${accountOpen ? 'block' : 'hidden'}`}
+            >
               <li><a href="#" className="hover:underline">Login</a></li>
               <li><a href="#" className="hover:underline">Register</a></li>
             </ul>
@@ -70,7 +104,7 @@ const Footer: React.FC = () => {
 
         {/* Bottom Section: Copyright and Links */}
         <div className="flex flex-col md:flex-row justify-between items-center text-xs text-gray-600">
-          <span className="text-darkGray font-medium text-base mb-4 md:mb-0">
+          <span className="text-darkGray font-medium text-base mb-1 md:mb-0">
             &copy; 2024 brand.inc. All Rights Reserved
           </span>
           <div className="flex space-x-4">

@@ -40,7 +40,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
         />
         <button
           onClick={handleToggleLike}
-          className="absolute top-4 left-4 text-black text-lg bg-lightGray bg-opacity-50 rounded-full p-2 z-10 focus:outline-none"
+          className="absolute top-4 left-4 text-black text-lg bg-lightGray bg-opacity-50 rounded-full p-1 z-10 focus:outline-none"
         >
           {liked ? <FaHeart className="text-black" /> : <FaRegHeart />}
         </button>
