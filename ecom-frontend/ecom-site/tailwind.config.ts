@@ -8,6 +8,9 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      width: {
+        '3/10': '30%',
+      },
       colors: {
         primary: "#196bde",        
         secondary: "#d7d9de",      

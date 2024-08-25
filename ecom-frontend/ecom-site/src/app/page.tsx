@@ -5,7 +5,8 @@ import Footer from "@/components/common/footer/page";
 import Slider from "@/components/common/slider/page";
 import HeroSection from "@/components/home/hero-section/page";
 import ProductCategories from "@/components/home/product-categories/page";
-import AuthPage from "@/components/auth/page";
+import { useState } from "react";
+import CartDrawer from "@/components/common/product-cart/page";
 
 export default function Home() {
   const newProducts = [
@@ -122,6 +123,58 @@ export default function Home() {
       liked: false,
     },
 ];
+
+const [isCartOpen, setIsCartOpen] = useState(false);
+
+  const handleCartToggle = () => {
+    setIsCartOpen(!isCartOpen);
+  };
+
+  const cartItems = [
+    {
+      imageUrl: '/images/user/sample-image-4.png',
+      name: 'Adapt X Whitney Crop Top',
+      size: 'M',
+      color: 'Black',
+      price: 32,
+    },
+    {
+      imageUrl: '/images/user/sample-image-4.png',
+      name: 'Adapt X Whitney Crop Top',
+      size: 'M',
+      color: 'Black',
+      price: 32,
+    },
+    {
+      imageUrl: '/images/user/sample-image-4.png',
+      name: 'Adapt X Whitney Crop Top',
+      size: 'M',
+      color: 'Black',
+      price: 32,
+    },
+    {
+      imageUrl: '/images/user/sample-image-4.png',
+      name: 'Adapt X Whitney Crop Top',
+      size: 'M',
+      color: 'Black',
+      price: 32,
+    },
+    {
+      imageUrl: '/images/user/sample-image-4.png',
+      name: 'Adapt X Whitney Crop Top',
+      size: 'M',
+      color: 'Black',
+      price: 32,
+    },
+    {
+      imageUrl: '/images/user/sample-image-4.png',
+      name: 'Adapt X Whitney Crop Top',
+      size: 'M',
+      color: 'Black',
+      price: 32,
+    },
+  ];
+  
 const saleProducts = [
   {
     imageUrl: "/images/user/sample-image-7.png",
@@ -166,7 +219,19 @@ const saleProducts = [
 ];
   return (
     <main>
-      <AuthPage />
+      <div className="pt-12">
+        <Header onCartToggle={handleCartToggle} />
+      </div>
+      <CartDrawer isOpen={isCartOpen} onClose={handleCartToggle} cartItems={cartItems} />
+      <HeroSection />
+      <div className="py-2">
+        <Slider products={newProducts} title="WHAT'S NEW" />
+      </div>
+      <ProductCategories />
+      <div className="py-2">
+        <Slider products={saleProducts} title="SALE" />
+      </div>
+      <Footer />
     </main>
   );
 }

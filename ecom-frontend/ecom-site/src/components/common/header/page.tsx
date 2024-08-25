@@ -2,7 +2,11 @@
 import React, { useEffect, useState } from 'react';
 import { FaHeart, FaRegHeart, FaUser, FaShoppingBag, FaSearch, FaBars, FaTimes } from 'react-icons/fa';
 
-const Header: React.FC = () => {
+interface HeaderProps {
+  onCartToggle: () => void;
+}
+
+const Header: React.FC<HeaderProps> = ({ onCartToggle }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
@@ -67,7 +71,7 @@ const Header: React.FC = () => {
         <button className="hover:text-gray2">
           <FaUser size={14} />
         </button>
-        <button className="hover:text-gray2">
+        <button onClick={onCartToggle} className="text-gray2">
           <FaShoppingBag size={14} />
         </button>
         <button className="hover:text-gray2 md:hidden" onClick={toggleMenu}>
