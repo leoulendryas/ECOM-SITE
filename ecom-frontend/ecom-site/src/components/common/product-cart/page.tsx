@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { FiPlus } from 'react-icons/fi'; 
-import ProductCard from '@/components/common/smaller-product-card/page';
+import ProductCard from '@/components/common/cart-product-card/page';
 import Button5 from '../button/button-five/page';
 import { FaTimes } from 'react-icons/fa';
 
