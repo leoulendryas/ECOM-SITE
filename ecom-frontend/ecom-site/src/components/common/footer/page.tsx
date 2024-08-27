@@ -7,7 +7,7 @@ const Footer: React.FC = () => {
   const [accountOpen, setAccountOpen] = useState(false);
 
   return (
-    <footer className="bg-white py-8 w-full mt-auto">
+    <footer className="bg-whiter py-8 w-full mt-auto">
       <div className="container mx-auto px-4">
         {/* Top Section: Links */}
         <div className="flex flex-col md:flex-row justify-between items-start mb-6">
