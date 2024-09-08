@@ -8,7 +8,7 @@ const ProductDetails: React.FC = () => {
 
   // Sample image sources
   const imageSources = [
-    '/images/user/sample-image-1.png', // Replace with actual paths
+    '/images/user/sample-image-1.png', 
     '/images/user/sample-image-2.png',
     '/images/user/sample-image-3.png',
     '/images/user/sample-image-4.png',
@@ -51,8 +51,8 @@ const ProductDetails: React.FC = () => {
       </div>
 
       {/* Right Section: Product Info */}
-      <div className="w-full mt-8 md:w-2/5 mt-0 md:ml-8 flex flex-col items-center">
-        <h1 className="text-2xl lg:text-3xl font-semibold">Arrival 7" Shorts</h1>
+      <div className="w-full md:w-2/5 mt-0 md:ml-8 flex flex-col items-center">
+        <h1 className="text-2xl lg:text-3xl font-semibold">Arrival 7 Shorts</h1>
         <p className="text-xl md:text-2xl mt-2 text-gray font-medium">XL</p>
         <p className="text-xl md:text-2xl mt-2 font-medium">$25</p>
 

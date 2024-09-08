@@ -9,12 +9,12 @@ const filterOptions = {
   Color: ['Red', 'Blue', 'Green', 'Yellow', 'Black', 'White', 'Purple', 'Orange', 'Pink', 'Gray', 'Brown', 'Beige'],
 };
 
-const filters = Object.keys(filterOptions);
+const filters = Object.keys(filterOptions) as Array<keyof typeof filterOptions>;
 
 const FilterSection: React.FC = () => {
   const [activeFilters, setActiveFilters] = useState<string[]>([]);
 
-  const toggleFilter = (filter: string) => {
+  const toggleFilter = (filter: keyof typeof filterOptions) => {
     if (activeFilters.includes(filter)) {
       setActiveFilters(activeFilters.filter(f => f !== filter));
     } else {
@@ -51,7 +51,7 @@ const FilterSection: React.FC = () => {
               <div className="mt-2 pl-4">
                 {filterOptions[filter].map((option, idx) => (
                   <div key={idx} className="text-gray-700 text-sm mb-2">
-                    <input className="" type="checkbox" id={`${filter}-${option}`} className="mr-2" />
+                    <input className="" type="checkbox" id={`${filter}-${option}`} />
                     <label className="text-darkGray text-md font-medium" htmlFor={`${filter}-${option}`}>{option}</label>
                   </div>
                 ))}
