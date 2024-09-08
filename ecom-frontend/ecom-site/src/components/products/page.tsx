@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import ProductCard from '@/components/common/smaller-product-card/page';
 import FilterSection from '@/components/common/filter/page';
-import Button5 from '../button/button-five/page';
+import Button5 from '@/components/common/button/button-five/page';
 
 interface ProductCardProps {
     imageUrl: string;
