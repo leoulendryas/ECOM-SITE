@@ -1,7 +1,6 @@
-const db = require('../config/db');
-
-const Product = db.Product;
-const ProductImage = db.ProductImage;
+const { models } = require('../config/db');
+const Product = models.Product;
+const ProductImage = models.ProductImage;
 
 // Create a new product
 exports.createProduct = async (req, res) => {
@@ -17,7 +16,7 @@ exports.createProduct = async (req, res) => {
 exports.getAllProducts = async (req, res) => {
   try {
     const products = await Product.findAll({
-      include: [db.Category, db.ProductImage],
+      include: [models.Category, models.ProductImage],
     });
     res.status(200).json(products);
   } catch (error) {
@@ -29,7 +28,7 @@ exports.getAllProducts = async (req, res) => {
 exports.getProductById = async (req, res) => {
   try {
     const product = await Product.findByPk(req.params.id, {
-      include: [db.Category, db.ProductImage],
+      include: [models.Category, models.ProductImage],
     });
     if (!product) {
       return res.status(404).json({ error: 'Product not found' });

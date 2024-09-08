@@ -1,4 +1,3 @@
-// config/db.js
 const Sequelize = require('sequelize');
 const dotenv = require('dotenv');
 dotenv.config();
@@ -10,9 +9,15 @@ const sequelize = new Sequelize(
   {
     host: process.env.DB_HOST,
     dialect: 'postgres',
-    logging: false, // set to console.log to see the raw SQL queries
+    logging: false,
+    define: {
+      freezeTableName: true, // This ensures Sequelize does not pluralize table names
+      timestamps: true, // Keep timestamps if you want to use `createdAt` and `updatedAt`
+    },
+    sync: { force: true }, // Disable automatic syncing to avoid table duplication
   }
 );
+
 
 const models = {
   Cart: require('../models/cart')(sequelize, Sequelize.DataTypes),
