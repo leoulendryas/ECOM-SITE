@@ -1,22 +1,27 @@
 const jwt = require('jsonwebtoken');
-const { User } = require('../models');
+const { models } = require('../config/db');  // Ensure models are imported from the db config
+const { User } = models;
 
 const authMiddleware = async (req, res, next) => {
-    const token = req.header('Authorization').replace('Bearer ', '');
+  const token = req.header('Authorization')?.replace('Bearer ', '');
 
-    try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-        const user = await User.findByPk(decoded.id);
+  if (!token) {
+    return res.status(401).json({ message: 'Please authenticate' });
+  }
 
-        if (!user) {
-            throw new Error();
-        }
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const user = await User.findByPk(decoded.id);
 
-        req.user = user;
-        next();
-    } catch (err) {
-        res.status(401).json({ message: 'Please authenticate' });
+    if (!user) {
+      return res.status(401).json({ message: 'User not found' });
     }
+
+    req.user = user;
+    next();
+  } catch (err) {
+    return res.status(401).json({ message: 'Invalid token' });
+  }
 };
 
 module.exports = authMiddleware;

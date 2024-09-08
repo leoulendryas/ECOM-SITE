@@ -1,6 +1,5 @@
-const db = require('../config/db');
-
-const SaleProduct = db.SaleProduct;
+const { models } = require('../config/db');
+const SaleProduct = models.SaleProduct;
 
 // Create a new sale product
 exports.createSaleProduct = async (req, res) => {
@@ -16,7 +15,7 @@ exports.createSaleProduct = async (req, res) => {
 exports.getAllSaleProducts = async (req, res) => {
   try {
     const saleProducts = await SaleProduct.findAll({
-      include: [db.Product],
+      include: [models.Product],
     });
     res.status(200).json(saleProducts);
   } catch (error) {
@@ -28,7 +27,7 @@ exports.getAllSaleProducts = async (req, res) => {
 exports.getSaleProductById = async (req, res) => {
   try {
     const saleProduct = await SaleProduct.findByPk(req.params.id, {
-      include: [db.Product],
+      include: [models.Product],
     });
     if (!saleProduct) {
       return res.status(404).json({ error: 'Sale product not found' });

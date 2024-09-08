@@ -1,26 +1,25 @@
-const db = require('../config/db');
+const { models } = require('../config/db');
+const Wishlist = models.Wishlist;
 
-const Wishlist = db.Wishlist;
-
-// Add a product to the wishlist
-exports.addProductToWishlist = async (req, res) => {
+// Add item to wishlist
+exports.addToWishlist = async (req, res) => {
   try {
-    const wishlist = await Wishlist.create({
-      user_id: req.body.user_id,
+    const wishlistItem = await Wishlist.create({
+      user_id: req.user.id,
       product_id: req.body.product_id,
     });
-    res.status(201).json(wishlist);
+    res.status(201).json(wishlistItem);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
-// Get wishlist for a user
-exports.getWishlistByUserId = async (req, res) => {
+// Get wishlist by user ID
+exports.getWishlist = async (req, res) => {
   try {
     const wishlist = await Wishlist.findAll({
-      where: { user_id: req.params.user_id },
-      include: [db.Product],
+      where: { user_id: req.user.id },
+      include: [models.Product],  // Ensure to include Product association
     });
     res.status(200).json(wishlist);
   } catch (error) {
@@ -28,11 +27,11 @@ exports.getWishlistByUserId = async (req, res) => {
   }
 };
 
-// Remove a product from the wishlist
-exports.removeProductFromWishlist = async (req, res) => {
+// Remove item from wishlist
+exports.removeFromWishlist = async (req, res) => {
   try {
     const wishlistItem = await Wishlist.findOne({
-      where: { user_id: req.params.user_id, product_id: req.params.product_id },
+      where: { id: req.params.id, user_id: req.user.id },
     });
     if (!wishlistItem) {
       return res.status(404).json({ error: 'Wishlist item not found' });
