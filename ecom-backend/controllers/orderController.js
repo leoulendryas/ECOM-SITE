@@ -1,7 +1,6 @@
-const db = require('../config/db');
-
-const Order = db.Order;
-const OrderItem = db.OrderItem;
+const { models } = require('../config/db');
+const Order = models.Order;
+const OrderItem = models.OrderItem;
 
 // Create an order
 exports.createOrder = async (req, res) => {
@@ -24,7 +23,7 @@ exports.createOrder = async (req, res) => {
 exports.getAllOrders = async (req, res) => {
   try {
     const orders = await Order.findAll({
-      include: [db.OrderItem],
+      include: [models.OrderItem],
     });
     res.status(200).json(orders);
   } catch (error) {
@@ -36,7 +35,7 @@ exports.getAllOrders = async (req, res) => {
 exports.getOrderById = async (req, res) => {
   try {
     const order = await Order.findByPk(req.params.id, {
-      include: [db.OrderItem],
+      include: [models.OrderItem],
     });
     if (!order) {
       return res.status(404).json({ error: 'Order not found' });

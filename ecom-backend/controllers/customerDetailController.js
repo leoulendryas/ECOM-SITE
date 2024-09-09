@@ -1,6 +1,5 @@
-const db = require('../config/db');
-
-const CustomerDetail = db.CustomerDetail;
+const { models } = require('../config/db');
+const CustomerDetail = models.CustomerDetail;
 
 // Create customer detail
 exports.createCustomerDetail = async (req, res) => {

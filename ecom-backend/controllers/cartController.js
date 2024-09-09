@@ -1,7 +1,6 @@
-const db = require('../config/db');
-
-const Cart = db.Cart;
-const CartItem = db.CartItem;
+const { models } = require('../config/db');
+const Cart = models.Cart;
+const CartItem = models.CartItem;
 
 // Create a cart for a user
 exports.createCart = async (req, res) => {
@@ -18,7 +17,7 @@ exports.getCartByUserId = async (req, res) => {
   try {
     const cart = await Cart.findOne({
       where: { user_id: req.params.user_id },
-      include: [db.CartItem],
+      include: [models.CartItem],
     });
     if (!cart) {
       return res.status(404).json({ error: 'Cart not found' });
