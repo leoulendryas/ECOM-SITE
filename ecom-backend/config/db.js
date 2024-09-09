@@ -14,7 +14,7 @@ const sequelize = new Sequelize(
       freezeTableName: true, // This ensures Sequelize does not pluralize table names
       timestamps: true, // Keep timestamps if you want to use `createdAt` and `updatedAt`
     },
-    sync: { force: true }, // Disable automatic syncing to avoid table duplication
+    sync: { force: false }, // Disable automatic syncing to avoid table duplication
   }
 );
 
