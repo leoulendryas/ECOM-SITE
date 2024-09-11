@@ -8,6 +8,7 @@ module.exports = (sequelize, DataTypes) => {
     price: { type: DataTypes.DECIMAL(10, 2), allowNull: false },
     is_featured: { type: DataTypes.BOOLEAN, defaultValue: false },
     is_new: { type: DataTypes.BOOLEAN, defaultValue: false },
+    gender: { type: DataTypes.STRING(20), validate: { isIn: [['Men', 'Women', 'Kids']] } } // Add gender field
   }, { tableName: 'products', timestamps: true });
 
   Product.associate = (models) => {

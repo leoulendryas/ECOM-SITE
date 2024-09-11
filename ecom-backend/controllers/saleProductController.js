@@ -15,7 +15,12 @@ exports.createSaleProduct = async (req, res) => {
 exports.getAllSaleProducts = async (req, res) => {
   try {
     const saleProducts = await SaleProduct.findAll({
-      include: [models.Product],
+      include: [
+        {
+          model: models.Product,
+          include: [models.ProductImage], // Include associated product images
+        },
+      ],
     });
     res.status(200).json(saleProducts);
   } catch (error) {
@@ -27,7 +32,12 @@ exports.getAllSaleProducts = async (req, res) => {
 exports.getSaleProductById = async (req, res) => {
   try {
     const saleProduct = await SaleProduct.findByPk(req.params.id, {
-      include: [models.Product],
+      include: [
+        {
+          model: models.Product,
+          include: [models.ProductImage], // Include associated product images
+        },
+      ],
     });
     if (!saleProduct) {
       return res.status(404).json({ error: 'Sale product not found' });

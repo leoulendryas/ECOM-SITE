@@ -35,9 +35,9 @@ const ProductCard: React.FC<ProductCardProps> = ({
         <Image 
           src={imageUrl} 
           alt={name} 
-          layout="fill" 
-          objectFit="cover" 
-          className="absolute inset-0"
+          fill
+          className="absolute inset-0 object-cover"
+          sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 440px"
         />
         <button
           onClick={handleToggleLike}

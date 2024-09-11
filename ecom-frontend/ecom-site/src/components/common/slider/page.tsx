@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import ProductCard from "@/components/common/product-card/page";
 import { FaAngleRight, FaAngleLeft } from 'react-icons/fa';
+import Link from "next/link";
 
 interface ProductCardProps {
   imageUrl: string;
@@ -15,9 +16,10 @@ interface ProductCardProps {
 interface SliderProps {
   products: Omit<ProductCardProps, 'onToggleLike'>[];
   title: string;
+  path: string;
 }
 
-const Slider: React.FC<SliderProps> = ({ products, title }) => {
+const Slider: React.FC<SliderProps> = ({ products, title, path }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(1);
   const sliderRef = useRef<HTMLDivElement | null>(null);
@@ -67,9 +69,13 @@ const Slider: React.FC<SliderProps> = ({ products, title }) => {
 
   return (
     <div className="relative bg-whiter px-4 md:px-20 pt-12 pb-12" ref={sliderRef}>
-      {/* Title and Navigation */}
       <div className="flex justify-between items-center mb-4">
-        <h2 className="text-2xl font-semibold">{title}</h2>
+        <div className="flex items-center gap-6">
+          <h2 className="text-2xl font-bold">{title}</h2>
+          <Link className="mt-auto" href={`/products/${path}`}>
+            <p className="text-sm font-semibold underline">View All</p>
+          </Link>
+        </div>
         <div className="flex space-x-4">
           {currentPage >= 0 && (
             <button
@@ -90,7 +96,6 @@ const Slider: React.FC<SliderProps> = ({ products, title }) => {
         </div>
       </div>
 
-      {/* Slider Content */}
       <div className="overflow-hidden">
         <div
           className="flex transition-transform duration-500 ease-in-out"
