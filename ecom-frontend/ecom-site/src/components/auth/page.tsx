@@ -6,6 +6,13 @@ const AuthPage = () => {
   const [isLogin, setIsLogin] = useState(true);
   const [index, setIndex] = useState(0);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [formData, setFormData] = useState({
+    first_name: '',
+    last_name: '',
+    phone_number: '',
+    email: '',
+    password: '',
+  });
 
   const texts = [
     "Welcome to Brand, where style meets culture.",
@@ -26,6 +33,35 @@ const AuthPage = () => {
       setIsLogin(!isLogin);
       setIsTransitioning(false);
     }, 500); 
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+
+    const url = isLogin ? '/api/auth/login' : '/api/auth/register';
+    
+    try {
+      const response = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+
+      const result = await response.json();
+      if (response.ok) {
+        alert('Success!');
+      } else {
+        alert(`Error: ${result.message}`);
+      }
+    } catch (error) {
+      alert('Error occurred while processing the request.');
+    }
   };
 
   const backgroundPosition = isLogin ? 'left' : 'right';
@@ -98,15 +134,21 @@ const AuthPage = () => {
           } w-full max-w-xs sm:max-w-sm lg:max-w-md`}
         >
           {isLogin ? (
-            <form className="w-full">
+            <form onSubmit={handleSubmit} className="w-full">
               <input
                 type="email"
+                name="email"
                 placeholder="Email Address"
+                value={formData.email}
+                onChange={handleChange}
                 className="w-full p-2 sm:p-3 bg-lightGray text-gray rounded-xl mb-4 sm:mb-6 text-sm sm:text-lg focus:outline-none"
               />
               <input
                 type="password"
+                name="password"
                 placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
                 className="w-full p-2 sm:p-3 bg-lightGray rounded-xl mb-2 sm:mb-2 text-sm sm:text-lg focus:outline-none"
               />
               <div className="text-left text-primary text-sm mb-3 sm:mb-4">
@@ -117,30 +159,45 @@ const AuthPage = () => {
               </div>
             </form>
           ) : (
-            <form className="w-full">
+            <form onSubmit={handleSubmit} className="w-full">
               <input
                 type="text"
+                name="first_name"
                 placeholder="First Name"
+                value={formData.first_name}
+                onChange={handleChange}
                 className="w-full p-2 sm:p-3 bg-lightGray rounded-xl mb-4 sm:mb-6 text-sm sm:text-lg focus:outline-none"
               />
               <input
                 type="text"
+                name="last_name"
                 placeholder="Last Name"
+                value={formData.last_name}
+                onChange={handleChange}
                 className="w-full p-2 sm:p-3 bg-lightGray rounded-xl mb-4 sm:mb-6 text-sm sm:text-lg focus:outline-none"
               />
               <input
                 type="text"
+                name="phone_number"
                 placeholder="Phone Number"
+                value={formData.phone_number}
+                onChange={handleChange}
                 className="w-full p-2 sm:p-3 bg-lightGray rounded-xl mb-4 sm:mb-6 text-sm sm:text-lg focus:outline-none"
               />
               <input
                 type="email"
+                name="email"
                 placeholder="Email Address"
+                value={formData.email}
+                onChange={handleChange}
                 className="w-full p-2 sm:p-3 bg-lightGray rounded-xl mb-4 sm:mb-6 text-sm sm:text-lg focus:outline-none"
               />
               <input
                 type="password"
+                name="password"
                 placeholder="Password"
+                value={formData.password}
+                onChange={handleChange}
                 className="w-full p-2 sm:p-3 bg-lightGray rounded-xl mb46 sm:mb-6 text-sm sm:text-lg focus:outline-none"
               />
               <div className="flex items- space-x-2 mb-3 sm:mb-4">
@@ -149,9 +206,9 @@ const AuthPage = () => {
                   Tick here to receive emails about our product, exclusive content, and more. View our <a href="#" className="text-darkGray">privacy policy</a>.
                 </label>
               </div>
-              <button className="w-full py-2 sm:py-3">
+              <div className="w-full py-2 sm:py-3">
                 <Button4 text="SIGN UP" />
-              </button>
+              </div>
             </form>
           )}
         </div>

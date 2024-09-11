@@ -3,19 +3,25 @@ import ProductCard from '@/components/common/smaller-product-card/page';
 import FilterSection from '@/components/common/filter/page';
 import Button5 from '@/components/common/button/button-five/page';
 
-interface ProductCardProps {
-    imageUrl: string;
+interface ProductImage {
+    id: number;
+    image_url: string;
+    position: string;
+    position_sequence: number;
+}
+
+interface Product {
+    id: number;
     name: string;
     size: string;
     color: string;
-    price: number;
+    price: string;
     liked: boolean;
-    onToggleLike: () => void;
-    className?: string; 
+    ProductImages: ProductImage[];
 }
 
 interface ProductsPageProps {
-    products: Omit<ProductCardProps, 'onToggleLike'>[];
+    products: Product[];
     title?: string;
 }
 
@@ -32,7 +38,6 @@ const ProductsPage: React.FC<ProductsPageProps> = ({ products }) => {
     return (
         <div className="p-4 mb-8">
             <div className="flex flex-col md:flex-row">
-                {/* Filter Section */}
                 <div className="md:w-2/6 lg:w-1/6 w-full mb-4 md:mb-0">
                     <button
                         className="md:hidden bg-gray-200 p-2 w-full text-left mb-4"
@@ -45,17 +50,20 @@ const ProductsPage: React.FC<ProductsPageProps> = ({ products }) => {
                     </div>
                 </div>
 
-                {/* Products Section */}
                 <div className="w-full md:w-full overflow-y-auto">
                     <div className="flex justify-between items-center mb-6">
-                        <h2 className="text-lg font-semibold">50 Items</h2>
+                        <h2 className="text-lg font-semibold">{products.length} Items</h2>
                     </div>
                     <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
                         {products.map((product, index) => (
                             <ProductCard
                                 key={index}
                                 className="w-full sm:w-[calc(50%-1rem)] lg:w-[calc(33.33%-1rem)]"
-                                {...product}
+                                imageUrl={product.ProductImages[0]?.image_url || ''}
+                                name={product.name}
+                                size={product.size}
+                                color={product.color}
+                                price={product.price}
                                 liked={likedProducts[index]}
                                 onToggleLike={() => toggleLike(index)}
                             />

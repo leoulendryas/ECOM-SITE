@@ -8,9 +8,10 @@ interface ProductCardProps {
     name: string;
     size: string;
     color: string;
-    price: number;
+    price: string;
     liked: boolean;
     onToggleLike: () => void;  
+    className?: string; 
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ 

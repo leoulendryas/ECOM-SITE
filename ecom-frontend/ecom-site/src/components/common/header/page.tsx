@@ -1,6 +1,7 @@
 "use client"
 import React, { useEffect, useState } from 'react';
 import { FaHeart, FaRegHeart, FaUser, FaShoppingBag, FaSearch, FaBars, FaTimes } from 'react-icons/fa';
+import Link from 'next/link';
 
 interface HeaderProps {
   onCartToggle: () => void;
@@ -32,18 +33,15 @@ const Header: React.FC<HeaderProps> = ({ onCartToggle }) => {
         isScrolled ? 'opacity-85' : 'opacity-100'
       }`}
     >
-      {/* Left Section: Logo */}
       <div className="flex items-center">
         <a href='#' className="font-medium text-xs">LOGO HERE</a>
       </div>
 
-      {/* Middle Section: Navigation Links */}
       <nav
         className={`fixed top-0 right-0 h-full w-full bg-darkGray text-white transform ${
           isMenuOpen ? 'translate-x-0' : 'translate-x-full'
         } transition-transform duration-300 ease-in-out flex flex-col items-center space-y-20 md:static md:flex md:flex-row md:space-x-8 md:space-y-0 md:w-auto md:translate-x-0`}
       >
-        {/* Conditionally Render Close Button */}
           {isMenuOpen && (
           <button 
             className="self-end p-4 text-white hover:text-gray-300"
@@ -52,15 +50,14 @@ const Header: React.FC<HeaderProps> = ({ onCartToggle }) => {
             <FaTimes  size={28} />
           </button>
         )}
-        <a href="#" className="hover:text-gray2 text-white text-xl md:text-xs font-medium">New & Featured</a>
+        <a href="/products/newAndFeatured" className="hover:text-gray2 text-white text-xl md:text-xs font-medium">New & Featured</a>
         <a href="#" className="hover:text-gray2 text-white text-xl md:text-xs font-medium">Create Your Own</a>
-        <a href="#" className="hover:text-gray2 text-white text-xl md:text-xs font-medium">Men</a>
-        <a href="#" className="hover:text-gray2 text-white text-xl md:text-xs font-medium">Women</a>
-        <a href="#" className="hover:text-gray2 text-white text-xl md:text-xs font-medium">Kids</a>
-        <a href="#" className="hover:text-gray2 text-white text-xl md:text-xs font-medium">Sale</a>
+        <a href="/products/men" className="hover:text-gray2 text-white text-xl md:text-xs font-medium">Men</a>
+        <a href="/products/women" className="hover:text-gray2 text-white text-xl md:text-xs font-medium">Women</a>
+        <a href="/products/kids" className="hover:text-gray2 text-white text-xl md:text-xs font-medium">Kids</a>
+        <a href="/products/sale" className="hover:text-gray2 text-white text-xl md:text-xs font-medium">Sale</a>
       </nav>
 
-      {/* Right Section: Icons */}
       <div className="flex space-x-4 md:space-x-8">
         <button className="hover:text-gray2">
           <FaSearch size={14} />
@@ -68,10 +65,12 @@ const Header: React.FC<HeaderProps> = ({ onCartToggle }) => {
         <button className="hover:text-gray2">
           <FaRegHeart size={14} />
         </button>
-        <button className="hover:text-gray2">
-          <FaUser size={14} />
-        </button>
-        <button onClick={onCartToggle} className="text-gray2">
+        <Link href={`/auth`}>
+          <button className="hover:text-gray2">
+            <FaUser size={14} />
+          </button>
+        </Link>
+        <button onClick={onCartToggle} className="hover:text-gray2">
           <FaShoppingBag size={14} />
         </button>
         <button className="hover:text-gray2 md:hidden" onClick={toggleMenu}>
