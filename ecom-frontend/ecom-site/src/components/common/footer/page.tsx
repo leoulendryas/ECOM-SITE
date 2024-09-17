@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FaYoutube, FaTwitter, FaInstagram, FaFacebook, FaPlus, FaMinus } from 'react-icons/fa';
+import Link from "next/link"
 
 const Footer: React.FC = () => {
   const [supportOpen, setSupportOpen] = useState(false);
@@ -67,8 +68,12 @@ const Footer: React.FC = () => {
             <ul
               className={`space-y-2 text-sm text-darkGray font-medium md:block ${accountOpen ? 'block' : 'hidden'}`}
             >
-              <li><a href="#" className="hover:underline">Login</a></li>
-              <li><a href="#" className="hover:underline">Register</a></li>
+              <Link href={`/auth`}>
+                <li className="hover:underline" >Login</li>
+              </Link>
+              <Link href={`/auth`}>
+                <li className="hover:underline">Register</li>
+              </Link>
             </ul>
           </div>
         </div>

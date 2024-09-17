@@ -1,14 +1,13 @@
 "use client";
 
-import Header from "@/components/common/header/page";
-import Footer from "@/components/common/footer/page";
+import { useState, useEffect } from "react";
 import Slider from "@/components/common/slider/page";
 import HeroSection from "@/components/home/hero-section/page";
 import ProductCategories from "@/components/home/product-categories/page";
-import { useState, useEffect } from "react";
-import CartDrawer from "@/components/common/product-cart/page";
+import ClientLayout from './ClientLayout';
 
 interface Product {
+  id: number;
   imageUrl: string;
   name: string;
   size: string;
@@ -20,7 +19,6 @@ interface Product {
 export default function Home() {
   const [newProducts, setNewProducts] = useState<Product[]>([]);
   const [saleProducts, setSaleProducts] = useState<Product[]>([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
 
   useEffect(() => {
     const fetchNewProducts = async () => {
@@ -29,6 +27,7 @@ export default function Home() {
         const data = await response.json();
         setNewProducts(
           data.map((product: any) => ({
+            id: product.id,
             imageUrl: product.ProductImages[0]?.image_url || "",
             name: product.name,
             size: product.size,
@@ -49,16 +48,17 @@ export default function Home() {
     const fetchSaleProducts = async () => {
       try {
         const response = await fetch("/api/getSaleProducts");
-  
+
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
-  
+
         const data = await response.json();
-  
+
         if (Array.isArray(data)) {
           setSaleProducts(
             data.map((saleProduct: any) => ({
+              id: saleProduct.Product.id,
               imageUrl: saleProduct.Product.ProductImages[0]?.image_url || "",
               name: saleProduct.Product.name,
               size: saleProduct.Product.size,
@@ -74,39 +74,20 @@ export default function Home() {
         console.error("Error fetching sale products:", error);
       }
     };
-  
+
     fetchSaleProducts();
   }, []);
 
-  const handleCartToggle = () => {
-    setIsCartOpen(!isCartOpen);
-  };
-
-  const cartItems = [
-    {
-      imageUrl: "/images/user/sample-image-4.png",
-      name: "Adapt X Whitney Crop Top",
-      size: "M",
-      color: "Black",
-      price: 32,
-    },
-  ];
-
   return (
-    <main>
-      <div className="pt-12">
-        <Header onCartToggle={handleCartToggle} />
-      </div>
-      <CartDrawer isOpen={isCartOpen} onClose={handleCartToggle} cartItems={cartItems} />
+    <ClientLayout>
       <HeroSection />
       <div className="py-2">
-        <Slider products={newProducts} title="WHAT'S NEW" path="newAndFeatured"/>
+        <Slider products={newProducts} title="WHAT'S NEW" path="newAndFeatured" />
       </div>
       <ProductCategories />
       <div className="py-2">
-        <Slider products={saleProducts} title="SALE" path="sale"/>
+        <Slider products={saleProducts} title="SALE" path="sale" />
       </div>
-      <Footer />
-    </main>
+    </ClientLayout>
   );
 }

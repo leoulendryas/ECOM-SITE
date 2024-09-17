@@ -1,27 +1,32 @@
 import React from 'react';
 import Image from 'next/image';
-import Button3 from '@/components/common/button/button-three/page';
+import Button1 from '@/components/common/button/button-one/page';
+import Link from "next/link"
 
 const ProductCategories: React.FC = () => {
   const categories = [
     {
       title: "Men's Wear",
       image: '/images/user/men-categories.png',
+      path: "/products/men",
       alt: "Men's Wear",
     },
     {
       title: "Women's Wear",
       image: '/images/user/women-categories.png',
+      path: "/products/women",
       alt: "Women's Wear",
     },
     {
       title: "Kids Wear",
       image: '/images/user/kids-categories.png',
+      path: "/products/kids",
       alt: "Kids Wear",
     },
     {
       title: "Custom",
       image: '/images/user/custom-categories.png',
+      path: "/products/men",
       alt: "Custom",
     },
   ];
@@ -44,7 +49,9 @@ const ProductCategories: React.FC = () => {
           />
           <div className="absolute inset-0 flex flex-col items-center justify-center bg-black bg-opacity-30 text-white">
             <h2 className="text-2xl md:text-3xl lg:text-4xl font-semibold mb-2 lg:mb-4">{category.title}</h2>
-            <Button3 text="Buy" />
+            <Link href={`${category.path}`}>
+              <Button1 text="Buy" />
+            </Link>
           </div>
         </div>
       ))}

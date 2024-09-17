@@ -19,8 +19,14 @@ exports.getWishlist = async (req, res) => {
   try {
     const wishlist = await Wishlist.findAll({
       where: { user_id: req.user.id },
-      include: [models.Product],  // Ensure to include Product association
+      include: [
+        {
+          model: models.Product,
+          include: [models.ProductImage], 
+        },
+      ],
     });
+
     res.status(200).json(wishlist);
   } catch (error) {
     res.status(400).json({ error: error.message });

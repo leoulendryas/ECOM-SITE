@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Button1 from '../common/button/button-one/page';
 import Button5 from '../common/button/button-five/page';
+import Cookies from 'js-cookie';
 
 interface Order {
   id: string;
@@ -14,19 +15,31 @@ const AccountPage: React.FC = () => {
   const router = useRouter();
 
   const [userInfo, setUserInfo] = useState({
-    firstName: 'John',
-    lastName: 'Doe',
-    email: 'johndoe@example.com',
-    phoneNumber: '123-456-7890',
+    first_name: '',
+    last_name: '',
+    email: '',
+    phone_number: '',
+    password: '',
   });
 
-  const [orders, setOrders] = useState<Order[]>([
-    { id: '1', date: '2024-08-25', total: '$120.00', status: 'Delivered' },
-    { id: '2', date: '2024-08-20', total: '$75.00', status: 'Processing' },
-  ]);
-
+  const [orders, setOrders] = useState<Order[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [editedInfo, setEditedInfo] = useState(userInfo);
+
+  useEffect(() => {
+    const fetchUserInfo = async () => {
+      try {
+        const response = await fetch('/api/getUser');
+        const data = await response.json();
+        setUserInfo(data);
+        setEditedInfo(data);
+      } catch (error) {
+        console.error('Error fetching user info:', error);
+      }
+    };
+
+    fetchUserInfo();
+  }, []);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -37,9 +50,26 @@ const AccountPage: React.FC = () => {
     setEditedInfo(userInfo); 
   };
 
-  const handleSave = () => {
-    setUserInfo(editedInfo);
-    setIsEditing(false);
+  const handleSave = async () => {
+    try {
+      const response = await fetch('/api/updateUser', {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(editedInfo),
+      });
+      
+      if (response.ok) {
+        const updatedUser = await response.json();
+        setUserInfo(updatedUser);
+        setIsEditing(false);
+      } else {
+        console.error('Failed to update user info');
+      }
+    } catch (error) {
+      console.error('Error saving user info:', error);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -50,19 +80,21 @@ const AccountPage: React.FC = () => {
     }));
   };
 
-  const handleLogout = () => {
-    console.log('Logout button clicked');
-    router.push('/login'); 
+  const handleLogout = async () => {
+    Cookies.remove('userId');
+    Cookies.remove('token');
+
+    router.push('/');
   };
 
   return (
     <div className="container mx-auto p-4">
       <div className="bg-lightGray rounded-lg p-6 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
-          <div className='space-y-2'>
-            <h2 className="text-lg font-semibold">{`${userInfo.firstName} ${userInfo.lastName}`}</h2>
+          <div className="space-y-2">
+            <h2 className="text-lg font-semibold">{`${userInfo.first_name} ${userInfo.last_name}`}</h2>
             <p className="text-black">{userInfo.email}</p>
-            <p className="text-black">{userInfo.phoneNumber}</p>
+            <p className="text-black">{userInfo.phone_number}</p>
           </div>
           <div className="flex space-x-4">
             <div onClick={handleEdit}>
@@ -83,8 +115,8 @@ const AccountPage: React.FC = () => {
               <label className="block text-gray-700">First Name</label>
               <input
                 type="text"
-                name="firstName"
-                value={editedInfo.firstName}
+                name="first_name"
+                value={editedInfo.first_name}
                 onChange={handleInputChange}
                 className="w-full px-4 py-2 rounded-lg focus:outline-none bg-lightGray"
               />
@@ -93,8 +125,18 @@ const AccountPage: React.FC = () => {
               <label className="block text-gray-700">Last Name</label>
               <input
                 type="text"
-                name="lastName"
-                value={editedInfo.lastName}
+                name="last_name"
+                value={editedInfo.last_name}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2 rounded-lg focus:outline-none bg-lightGray"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Email</label>
+              <input
+                type="email"
+                name="email"
+                value={editedInfo.email}
                 onChange={handleInputChange}
                 className="w-full px-4 py-2 rounded-lg focus:outline-none bg-lightGray"
               />
@@ -103,8 +145,18 @@ const AccountPage: React.FC = () => {
               <label className="block text-gray-700">Phone Number</label>
               <input
                 type="text"
-                name="phoneNumber"
-                value={editedInfo.phoneNumber}
+                name="phone_number"
+                value={editedInfo.phone_number}
+                onChange={handleInputChange}
+                className="w-full px-4 py-2 rounded-lg focus:outline-none bg-lightGray"
+              />
+            </div>
+            <div className="mb-4">
+              <label className="block text-gray-700">Password</label>
+              <input
+                type="password"
+                name="password"
+                value={editedInfo.password}
                 onChange={handleInputChange}
                 className="w-full px-4 py-2 rounded-lg focus:outline-none bg-lightGray"
               />
