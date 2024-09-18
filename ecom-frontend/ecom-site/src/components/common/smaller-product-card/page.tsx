@@ -1,5 +1,4 @@
 "use client";
-import { useState } from "react";
 import Image from "next/image";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 
@@ -10,8 +9,8 @@ interface ProductCardProps {
     color: string;
     price: string;
     liked: boolean;
-    onToggleLike: () => void;  
-    className?: string; 
+    onToggleLike: () => void;
+    onImageClick: () => void;
 }
 
 const ProductCard: React.FC<ProductCardProps> = ({ 
@@ -20,19 +19,21 @@ const ProductCard: React.FC<ProductCardProps> = ({
     size, 
     color, 
     price, 
-    liked: initialLiked, 
-    onToggleLike 
+    liked, 
+    onToggleLike, 
+    onImageClick 
 }) => {
-    const [liked, setLiked] = useState(initialLiked);
-
-    const handleToggleLike = () => {
-        setLiked(!liked);
-        onToggleLike();
+    const handleToggleLike = async (event: React.MouseEvent) => {
+        event.stopPropagation();
+        await onToggleLike();
     };
 
     return (
         <div className="overflow-hidden relative bg-white">
-            <div className="relative w-full pb-[100%]"> 
+            <div 
+                className="relative w-full pb-[100%] cursor-pointer"
+                onClick={onImageClick}
+            > 
                 <Image 
                     src={imageUrl} 
                     alt={name} 

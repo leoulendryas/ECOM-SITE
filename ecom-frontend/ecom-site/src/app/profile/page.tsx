@@ -1,22 +1,11 @@
 "use client"
 import AccountPage from "@/components/profile/page"
-import Header from "@/components/common/header/page"
-import Footer from "@/components/common/footer/page"
-import { useState } from "react";
+import ClientLayout from '../ClientLayout';
 
 export default function Profile() {
-  const [isCartOpen, setIsCartOpen] = useState(false);
-
-  const handleCartToggle = () => {
-    setIsCartOpen(!isCartOpen);
-  };
   return(
-    <div>
-      <div className="mt-20"> 
-        <Header onCartToggle={handleCartToggle} />
-      </div>
+    <ClientLayout>
       <AccountPage />
-      <Footer />
-    </div>
+    </ClientLayout>
   )
 }

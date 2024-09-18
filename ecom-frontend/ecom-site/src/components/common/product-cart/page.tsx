@@ -1,15 +1,18 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { FiPlus } from 'react-icons/fi'; 
 import ProductCard from '@/components/common/cart-product-card/page';
 import Button5 from '../button/button-five/page';
 import { FaTimes } from 'react-icons/fa';
 
 interface CartItem {
-  imageUrl: string;
-  name: string;
-  size: string;
-  color: string;
-  price: number;
+  id: number;
+  product_id: number;
+  quantity: number;
+  price_at_time_of_addition: string;
+  imageUrl?: string;
+  name?: string;
+  size?: string;
+  color?: string;
 }
 
 interface CartDrawerProps {
@@ -19,6 +22,9 @@ interface CartDrawerProps {
 }
 
 const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, cartItems }) => {
+  const [detailedCartItems, setDetailedCartItems] = useState<CartItem[]>([]);
+  const [subtotal, setSubtotal] = useState<number>(0);
+
   useEffect(() => {
     if (isOpen) {
       document.body.style.overflow = 'hidden';
@@ -29,6 +35,42 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, cartItems }) =
       document.body.style.overflow = '';
     };
   }, [isOpen]);
+
+  useEffect(() => {
+    const fetchProductDetails = async () => {
+      const updatedItems = await Promise.all(cartItems.map(async (item) => {
+        try {
+          const response = await fetch(`/api/getSingleProduct/${item.product_id}`);
+          if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+          const product = await response.json();
+          return {
+            ...item,
+            imageUrl: product.ProductImages[0]?.image_url || '/default-image.jpg', // Default image
+            name: product.name || 'Unnamed Product', // Default name
+            size: product.size || 'Unknown Size', // Default size
+            color: product.color || 'Unknown Color', // Default color
+          };
+        } catch (error) {
+          console.error("Error fetching product details:", error);
+          return item;
+        }
+      }));
+      setDetailedCartItems(updatedItems);
+      
+      // Calculate subtotal
+      const newSubtotal = updatedItems.reduce((acc, item) => acc + parseFloat(item.price_at_time_of_addition) * item.quantity, 0);
+      setSubtotal(newSubtotal);
+    };
+
+    fetchProductDetails();
+  }, [cartItems]);
+
+  const handleRemoveItem = (id: number) => {
+    setDetailedCartItems(prevItems => prevItems.filter(item => item.product_id !== id));
+  };
+
+  const deliveryFee = 0; // Assuming free delivery for now
+  const total = subtotal + deliveryFee;
 
   return (
     <>
@@ -46,7 +88,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, cartItems }) =
         w-full lg:w-2/5 xl:w-1/3 2xl:w-1/4 overflow-y-auto`}
       >
         <div className="p-4 max-h-full">
-          <button onClick={onClose} className="text-black text-2xl"><FaTimes  size={24} /></button>
+          <button onClick={onClose} className="text-black text-2xl"><FaTimes size={24} /></button>
           <h2 className="text-3xl font-medium my-4 text-center">Your Bag</h2>
           
           {/* Promo Code Section */}
@@ -59,14 +101,17 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, cartItems }) =
 
           {/* Cart Items */}
           <div>
-            {cartItems.map((item, index) => (
+            {detailedCartItems.map((item, index) => (
               <ProductCard
                 key={index}
-                imageUrl={item.imageUrl}
-                name={item.name}
-                size={item.size}
-                color={item.color}
-                price={item.price}
+                imageUrl={item.imageUrl || '/default-image.jpg'}
+                name={item.name || 'Unnamed Product'}
+                size={item.size || 'Unknown Size'}
+                color={item.color || 'Unknown Color'}
+                price={parseFloat(item.price_at_time_of_addition)}
+                quantity={item.quantity} // Pass quantity prop
+                id={item.id} // Pass productId prop
+                onRemove={handleRemoveItem} // Pass the remove function
               />
             ))}
           </div>
@@ -78,16 +123,16 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, cartItems }) =
           <div className="space-y-2">
             <div className="flex justify-between text-gray">
               <span>Sub Total:</span>
-              <span>$36</span>
+              <span>${subtotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-gray">
               <span>Delivery:</span>
-              <span>FREE</span>
+              <span>${deliveryFee.toFixed(2)}</span>
             </div>
-          <div className="flex justify-between text-gray">
-            <span>Total:</span>
-            <span>$36</span>
-          </div>
+            <div className="flex justify-between text-gray">
+              <span>Total:</span>
+              <span>${total.toFixed(2)}</span>
+            </div>
           </div>
 
           {/* Line break below total */}

@@ -1,5 +1,5 @@
-"use client"
-import { useState } from "react";
+"use client";
+import { useState, useEffect } from "react";
 import Image from "next/image";
 import { FaHeart, FaRegHeart } from "react-icons/fa";
 
@@ -10,31 +10,38 @@ interface ProductCardProps {
   color: string;
   price: number;
   liked: boolean;
-  onToggleLike: () => void;  
+  onToggleLike: () => void;
+  onImageClick: () => void;
 }
 
-const ProductCard: React.FC<ProductCardProps> = ({ 
-  imageUrl, 
-  name, 
-  size, 
-  color, 
-  price, 
-  liked: initialLiked, 
-  onToggleLike 
+const ProductCard: React.FC<ProductCardProps> = ({
+  imageUrl,
+  name,
+  size,
+  color,
+  price,
+  liked: initialLiked,
+  onToggleLike,
+  onImageClick
 }) => {
   const [liked, setLiked] = useState(initialLiked);
 
-  const handleToggleLike = () => {
-    setLiked(!liked);
-    onToggleLike();
+  useEffect(() => {
+    setLiked(initialLiked);
+  }, [initialLiked]);
+
+  const handleToggleLike = (event: React.MouseEvent) => {
+    event.stopPropagation();
+    setLiked(prev => !prev);
+    onToggleLike(); 
   };
 
   return (
-    <div className="w-[440px] overflow-hidden relative">
+    <div className="w-[440px] overflow-hidden relative cursor-pointer" onClick={onImageClick}>
       <div className="relative w-[440px] h-[550px]">
-        <Image 
-          src={imageUrl} 
-          alt={name} 
+        <Image
+          src={imageUrl}
+          alt={name}
           fill
           className="absolute inset-0 object-cover"
           sizes="(max-width: 768px) 100vw, (max-width: 1024px) 50vw, 440px"

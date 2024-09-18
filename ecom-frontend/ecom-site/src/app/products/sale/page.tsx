@@ -1,8 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import ProductsPage from "@/components/products/page";
-import Header from "@/components/common/header/page";
-import Footer from "@/components/common/footer/page";
+import ClientLayout from '../../ClientLayout';
 
 interface ProductImage {
   id: number;
@@ -22,7 +21,6 @@ interface Product {
 }
 
 export default function Products() {
-  const [isCartOpen, setIsCartOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<null | string>(null);
   const [saleProducts, setSaleProducts] = useState<Product[]>([]);
@@ -63,20 +61,12 @@ export default function Products() {
     fetchSaleProducts();
   }, []);
 
-  const handleCartToggle = () => {
-    setIsCartOpen(!isCartOpen);
-  };
-
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
   return (
-    <div>
-      <div className="pb-24">
-        <Header onCartToggle={handleCartToggle} />
-      </div>
-      <ProductsPage products={saleProducts} />
-      <Footer />
-    </div>
+    <ClientLayout>
+      <ProductsPage products={saleProducts} breadCrumbs={`Sale`}/>
+    </ClientLayout>
   );
 }

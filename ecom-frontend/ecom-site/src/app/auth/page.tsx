@@ -1,10 +1,11 @@
-"use client"
-import AuthPage from "@/components/auth/page"
+"use client";
+import React, { Suspense } from "react";
+import AuthPage from "@/components/auth/page";
 
 export default function Auth() {
-  return(
-    <div>
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
       <AuthPage />
-    </div>
-  )
+    </Suspense>
+  );
 }

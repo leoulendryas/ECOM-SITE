@@ -1,7 +1,12 @@
-"use client"
+"use client";
 import React, { useEffect, useState } from 'react';
 import { FaHeart, FaRegHeart, FaUser, FaShoppingBag, FaSearch, FaBars, FaTimes } from 'react-icons/fa';
 import Link from 'next/link';
+
+const getCookie = (name: string) => {
+  const cookieMatch = document.cookie.match(new RegExp(`(^| )${name}=([^;]+)`));
+  return cookieMatch ? decodeURIComponent(cookieMatch[2]) : null;
+};
 
 interface HeaderProps {
   onCartToggle: () => void;
@@ -10,6 +15,19 @@ interface HeaderProps {
 const Header: React.FC<HeaderProps> = ({ onCartToggle }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  useEffect(() => {
+
+    const token = getCookie('token');
+    console.log('Token:', token);
+
+    if (token) {
+      setIsAuthenticated(true);
+    } else {
+      setIsAuthenticated(false);
+    }
+  }, []);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -34,7 +52,7 @@ const Header: React.FC<HeaderProps> = ({ onCartToggle }) => {
       }`}
     >
       <div className="flex items-center">
-        <a href='#' className="font-medium text-xs">LOGO HERE</a>
+        <a href="/" className="font-medium text-xs">LOGO HERE</a>
       </div>
 
       <nav
@@ -42,12 +60,12 @@ const Header: React.FC<HeaderProps> = ({ onCartToggle }) => {
           isMenuOpen ? 'translate-x-0' : 'translate-x-full'
         } transition-transform duration-300 ease-in-out flex flex-col items-center space-y-20 md:static md:flex md:flex-row md:space-x-8 md:space-y-0 md:w-auto md:translate-x-0`}
       >
-          {isMenuOpen && (
-          <button 
+        {isMenuOpen && (
+          <button
             className="self-end p-4 text-white hover:text-gray-300"
             onClick={toggleMenu}
           >
-            <FaTimes  size={28} />
+            <FaTimes size={28} />
           </button>
         )}
         <a href="/products/newAndFeatured" className="hover:text-gray2 text-white text-xl md:text-xs font-medium">New & Featured</a>
@@ -62,10 +80,12 @@ const Header: React.FC<HeaderProps> = ({ onCartToggle }) => {
         <button className="hover:text-gray2">
           <FaSearch size={14} />
         </button>
-        <button className="hover:text-gray2">
-          <FaRegHeart size={14} />
-        </button>
-        <Link href={`/auth`}>
+        <Link href={`/wishlist`}>
+          <button className="hover:text-gray2">
+            <FaRegHeart size={14} />
+          </button>
+        </Link>
+        <Link href={isAuthenticated ? '/profile' : '/auth'}>
           <button className="hover:text-gray2">
             <FaUser size={14} />
           </button>

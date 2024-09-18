@@ -1,12 +1,10 @@
 "use client";
 import { useEffect, useState } from "react";
 import ProductsPage from "@/components/products/page";
-import Header from "@/components/common/header/page";
-import Footer from "@/components/common/footer/page";
+import ClientLayout from '../../ClientLayout';
 
 export default function Products() {
   const [products, setProducts] = useState([]);
-  const [isCartOpen, setIsCartOpen] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<null | string>(null);
 
@@ -28,20 +26,12 @@ export default function Products() {
     fetchProducts();
   }, [gender]);
 
-  const handleCartToggle = () => {
-    setIsCartOpen(!isCartOpen);
-  };
-
   if (loading) return <div>Loading...</div>;
   if (error) return <div>{error}</div>;
 
   return (
-    <div>
-      <div className="pb-24">
-        <Header onCartToggle={handleCartToggle} />
-      </div>
-      <ProductsPage products={products} />
-      <Footer />
-    </div>
+    <ClientLayout>
+      <ProductsPage products={products} breadCrumbs={`Mens`} />
+    </ClientLayout>
   );
 }
