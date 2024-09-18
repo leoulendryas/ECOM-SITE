@@ -4,6 +4,7 @@ import { useParams } from "next/navigation";
 import ProductCard from '@/components/common/wishlist-product-card/page';
 import FilterSection from '@/components/common/filter/page';
 import Button5 from '@/components/common/button/button-five/page';
+import Notification from '@/components/common/notification/page'; // Import Notification
 
 interface WishlistProduct {
     id: number;
@@ -33,6 +34,8 @@ const ProductsPage: React.FC = () => {
     const [wishlist, setWishlist] = useState<WishlistProduct[]>([]);
     const [isFilterOpen, setIsFilterOpen] = useState(false);
 
+    const [notification, setNotification] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
+
     useEffect(() => {
         const fetchWishlist = async () => {
             const token = Cookies.get('token'); 
@@ -47,7 +50,7 @@ const ProductsPage: React.FC = () => {
                 setWishlist(data);
                 setLikedProducts(data.map(() => true)); 
             } else {
-                console.error('Failed to fetch wishlist');
+                setNotification({ type: 'error', message: 'Failed to fetch wishlist' });
             }
         };
 
@@ -68,8 +71,10 @@ const ProductsPage: React.FC = () => {
                 }
             });
 
-            if (!response.ok) {
-                console.error('Failed to remove from wishlist');
+            if (response.ok) {
+                setNotification({ type: 'success', message: 'Removed from wishlist' });
+            } else {
+                setNotification({ type: 'error', message: 'Failed to remove from wishlist' });
             }
         } else {
             const response = await fetch('/api/wishlistAdd', {
@@ -78,11 +83,13 @@ const ProductsPage: React.FC = () => {
                     'Authorization': `Bearer ${token}`,
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ product_id: wishlist[wishlistId].product_id }) // Use product_id from wishlist
+                body: JSON.stringify({ product_id: wishlist[wishlistId].product_id })
             });
 
-            if (!response.ok) {
-                console.error('Failed to add to wishlist');
+            if (response.ok) {
+                setNotification({ type: 'success', message: 'Added to wishlist' });
+            } else {
+                setNotification({ type: 'error', message: 'Failed to add to wishlist' });
             }
         }
 
@@ -108,8 +115,9 @@ const ProductsPage: React.FC = () => {
                 await Promise.all(promises);
                 setWishlist([]); 
                 setLikedProducts([]);
+                setNotification({ type: 'success', message: 'All items removed from wishlist' });
             } catch (error) {
-                console.error('Error removing all items from wishlist:', error);
+                setNotification({ type: 'error', message: 'Error removing all items from wishlist' });
             }
         }
     };
@@ -140,19 +148,27 @@ const ProductsPage: React.FC = () => {
             });
 
             if (response.ok) {
-                console.log('Item added to cart');
+                setNotification({ type: 'success', message: 'Item added to cart' });
             } else {
                 const errorData = await response.json();
-                alert(`Error: ${errorData.message}`);
+                setNotification({ type: 'error', message: `Error: ${errorData.message}` });
             }
         } catch (error) {
-            console.error('Failed to add item to cart:', error);
-            alert('Failed to add item to cart. Please try again.');
+            setNotification({ type: 'error', message: 'Failed to add item to cart. Please try again.' });
         }
     };
 
     return (
         <div className="p-4 mb-8">
+            {/* Display notification */}
+            {notification && (
+              <Notification
+                type={notification.type}
+                message={notification.message}
+                onClose={() => setNotification(null)}
+              />
+            )}
+
             <div className="flex flex-col md:flex-row">
                 <div className="md:w-2/6 lg:w-1/6 w-full mb-4 md:mb-0">
                     <button
@@ -183,7 +199,7 @@ const ProductsPage: React.FC = () => {
                                 liked={likedProducts[index]}
                                 onToggleLike={() => toggleLike(index, item.id)}
                                 onClick={() => handleProductClick(item.Product.id)}
-                                onAddToBag={() => handleAddToBag(item.Product.id, item.Product.price)}  // Pass onAddToBag
+                                onAddToBag={() => handleAddToBag(item.Product.id, item.Product.price)}  
                             />
                         ))}
                     </div>

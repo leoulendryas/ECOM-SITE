@@ -3,17 +3,24 @@ import { useRouter } from 'next/navigation';
 import Button1 from '../common/button/button-one/page';
 import Button5 from '../common/button/button-five/page';
 import Cookies from 'js-cookie';
+import Notification from '@/components/common/notification/page'; 
 
 interface Order {
-  id: string;
-  date: string;
-  total: string;
-  status: string;
+  id: number;
+  total_amount: string;
+  payment_method: string;
+  order_status: string;
+  createdAt: string;
+  OrderItems: {
+    id: number;
+    quantity: number;
+    price: string;
+    product_id: number;
+  }[];
 }
 
 const AccountPage: React.FC = () => {
   const router = useRouter();
-
   const [userInfo, setUserInfo] = useState({
     first_name: '',
     last_name: '',
@@ -22,9 +29,11 @@ const AccountPage: React.FC = () => {
     password: '',
   });
 
-  const [orders, setOrders] = useState<Order[]>([]);
+  const [order, setOrder] = useState<Order | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [editedInfo, setEditedInfo] = useState(userInfo);
+  const [notification, setNotification] = useState<{ type: 'success' | 'error' | 'info'; message: string } | null>(null);
+  const orderId = localStorage.getItem('lastOrderId');
 
   useEffect(() => {
     const fetchUserInfo = async () => {
@@ -34,12 +43,28 @@ const AccountPage: React.FC = () => {
         setUserInfo(data);
         setEditedInfo(data);
       } catch (error) {
+        setNotification({ message: 'Error fetching user info', type: 'error' });
         console.error('Error fetching user info:', error);
       }
     };
 
+    const fetchOrder = async () => {
+      try {
+        const response = await fetch(`/api/getOrders/${orderId}`);
+        if (!response.ok) {
+          throw new Error('Failed to fetch order');
+        }
+        const data = await response.json();
+        setOrder(data);
+      } catch (error) {
+        setNotification({ message: 'Error fetching order details', type: 'error' });
+        console.error('Error fetching order:', error);
+      }
+    };
+
     fetchUserInfo();
-  }, []);
+    fetchOrder();
+  }, [orderId]);
 
   const handleEdit = () => {
     setIsEditing(true);
@@ -47,7 +72,7 @@ const AccountPage: React.FC = () => {
 
   const handleCancel = () => {
     setIsEditing(false);
-    setEditedInfo(userInfo); 
+    setEditedInfo(userInfo);
   };
 
   const handleSave = async () => {
@@ -59,15 +84,18 @@ const AccountPage: React.FC = () => {
         },
         body: JSON.stringify(editedInfo),
       });
-      
+
       if (response.ok) {
         const updatedUser = await response.json();
         setUserInfo(updatedUser);
         setIsEditing(false);
+        setNotification({ message: 'User information updated successfully!', type: 'success' });
       } else {
+        setNotification({ message: 'Failed to update user info', type: 'error' });
         console.error('Failed to update user info');
       }
     } catch (error) {
+      setNotification({ message: 'Error saving user info', type: 'error' });
       console.error('Error saving user info:', error);
     }
   };
@@ -83,12 +111,21 @@ const AccountPage: React.FC = () => {
   const handleLogout = async () => {
     Cookies.remove('userId');
     Cookies.remove('token');
-
+    setNotification({ message: 'Successfully logged out', type: 'info' });
     router.push('/');
   };
 
   return (
     <div className="container mx-auto p-4">
+      {/* Display notification */}
+      {notification && (
+        <Notification
+          type={notification.type}
+          message={notification.message}
+          onClose={() => setNotification(null)}
+        />
+      )}
+      
       <div className="bg-lightGray rounded-lg p-6 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
           <div className="space-y-2">
@@ -173,31 +210,38 @@ const AccountPage: React.FC = () => {
         </div>
       )}
 
-      <div className="bg-lightGray rounded-lg p-6">
-        <h3 className="text-lg font-semibold mb-4">Your Orders</h3>
-        {orders.length === 0 ? (
-          <p className="text-gray-600">You have no orders.</p>
-        ) : (
-          <ul className="space-y-4">
-            {orders.map((order) => (
-              <li
-                key={order.id}
-                className="flex flex-col sm:flex-row sm:items-center sm:justify-between p-4 border-b border-gray"
-              >
-                <div className='space-y-2'>
-                  <p className="font-semibold">Order #{order.id}</p>
-                  <p className="text-gray-600">Date: {order.date}</p>
-                  <p className="text-gray-600">Total: {order.total}</p>
-                  <p className={`text-${order.status === 'Delivered' ? 'green' : 'yellow'}-500`}>
-                    Status: {order.status}
-                  </p>
-                </div>
-                <button className="text-black hover:underline mt-2 sm:mt-0">View Details</button>
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
+      {order ? (
+        <div className="bg-lightGray rounded-xl p-6">
+          <div className="flex justify-between items-center mb-4">
+            <h3 className="text-xl font-semibold text-gray-800">Order Details</h3>
+            <span
+              className={`inline-block px-3 py-1 rounded-full text-sm font-semibold ${
+                order.order_status === 'completed'
+                  ? 'bg-green-100 text-green-600'
+                  : order.order_status === 'pending'
+                  ? 'bg-yellow-100 text-yellow-600'
+                  : 'bg-red-100 text-red-600'
+              }`}
+            >
+              {order.order_status.charAt(0).toUpperCase() + order.order_status.slice(1)}
+            </span>
+          </div>
+          <div className="space-y-3">
+            <p className="font-bold text-gray-800">Order-Id #{order.id}</p>
+            <p className="text-gray-800 font-semibold">
+              Total: <span className="font-bold">${order.total_amount}</span>
+            </p>
+            <p className="text-gray-800 font-semibold">
+              Payment Method: <span className="font-bold">{order.payment_method}</span>
+            </p>
+            <p className="text-gray-800 font-semibold">
+              Order Items: <span className="font-bold">{order.OrderItems.length}</span>
+            </p>
+          </div>
+        </div>
+      ) : (
+        <p>Loading order details...</p>
+      )}
     </div>
   );
 };

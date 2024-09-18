@@ -6,6 +6,7 @@ import ProductCard from "@/components/common/smaller-product-card/page";
 import FilterSection from "@/components/common/filter/page";
 import Button5 from "@/components/common/button/button-five/page";
 import Breadcrumb from "@/components/common/breadCrumb/page";
+import Notification from "@/components/common/notification/page";
 
 const useWishlist = () => {
   const [wishlist, setWishlist] = useState<
@@ -78,6 +79,8 @@ const ProductsPage: React.FC<ProductsPageProps> = ({ products, breadCrumbs }) =>
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [loading, setLoading] = useState(false);
 
+  const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
   useEffect(() => {
     const updatedLikes = products.map((product) =>
       wishlist.some((item) => item.productId === product.id)
@@ -133,16 +136,19 @@ const ProductsPage: React.FC<ProductsPageProps> = ({ products, breadCrumbs }) =>
             (item) => item.productId !== productId
           );
           setWishlist(updatedWishlist);
+          setNotification({ type: "success", message: "Removed from wishlist" });
         } else {
           const responseData = await response.json();
           const newWishlistItem = { productId, wishlistId: responseData.id };
           setWishlist([...wishlist, newWishlistItem]);
+          setNotification({ type: "success", message: "Added to wishlist" });
         }
       } catch (error) {
         console.error("Error adding/removing from wishlist:", error);
         setLikedProducts((prev) =>
           prev.map((liked, idx) => (idx === index ? previousLiked : liked))
         );
+        setNotification({ type: "error", message: "Action failed" });
       }
     },
     [likedProducts, wishlist, setWishlist]
@@ -222,6 +228,15 @@ const ProductsPage: React.FC<ProductsPageProps> = ({ products, breadCrumbs }) =>
           </div>
         </div>
       </div>
+
+      {/* Display notification */}
+      {notification && (
+        <Notification
+          type={notification.type}
+          message={notification.message}
+          onClose={() => setNotification(null)}
+        />
+      )}
     </>
   );
 };

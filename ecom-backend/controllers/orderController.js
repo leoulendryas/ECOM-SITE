@@ -1,23 +1,40 @@
-const { models } = require('../config/db');
+const { sequelize, models } = require('../config/db');  // Import sequelize
 const Order = models.Order;
 const OrderItem = models.OrderItem;
+const Cart = models.Cart;
+const CartItem = models.CartItem;
 
 // Create an order
 exports.createOrder = async (req, res) => {
+  const t = await sequelize.transaction();
+  
   try {
-    const order = await Order.create(req.body);
+    // Create the order
+    const order = await Order.create(req.body, { transaction: t });
+    
+    // Create the order items
     const orderItems = req.body.items.map(item => ({
       order_id: order.id,
       product_id: item.product_id,
       quantity: item.quantity,
       price: item.price,
     }));
-    await OrderItem.bulkCreate(orderItems);
+    await OrderItem.bulkCreate(orderItems, { transaction: t });
+
+    // Empty the cart
+    await CartItem.destroy({ where: { cart_id: req.body.cart_id }, transaction: t });
+    
+    // Commit transaction
+    await t.commit();
+
     res.status(201).json(order);
   } catch (error) {
+    // Rollback transaction in case of an error
+    await t.rollback();
     res.status(400).json({ error: error.message });
   }
 };
+
 
 // Get all orders
 exports.getAllOrders = async (req, res) => {

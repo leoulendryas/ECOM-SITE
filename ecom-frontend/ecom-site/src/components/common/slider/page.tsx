@@ -4,6 +4,7 @@ import ProductCard from "@/components/common/product-card/page";
 import { FaAngleRight, FaAngleLeft } from 'react-icons/fa';
 import Link from "next/link";
 import Cookies from "js-cookie";
+import Notification from "@/components/common/notification/page";
 
 interface ProductCardProps {
   id: number;
@@ -27,8 +28,9 @@ const Slider: React.FC<SliderProps> = ({ products, title, path }) => {
   const [currentPage, setCurrentPage] = useState(0);
   const [itemsPerPage, setItemsPerPage] = useState(1);
   const sliderRef = useRef<HTMLDivElement | null>(null);
-  const [likedProducts, setLikedProducts] = useState<boolean[]>(products.map(product => product.liked)); 
-  const [wishlistMap, setWishlistMap] = useState<{ [key: number]: number }>({}); 
+  const [likedProducts, setLikedProducts] = useState<boolean[]>(products.map(product => product.liked));
+  const [wishlistMap, setWishlistMap] = useState<{ [key: number]: number }>({});
+  const [notification, setNotification] = useState<{ message: string, type: 'success' | 'error' } | null>(null);
   const router = useRouter();
   const cardMargin = 1;
 
@@ -65,11 +67,11 @@ const Slider: React.FC<SliderProps> = ({ products, title, path }) => {
         if (response.ok) {
           const wishlist = await response.json();
           const wishlistProductIds = wishlist.map((item: { product_id: number, id: number }) => {
-            setWishlistMap(prevMap => ({ ...prevMap, [item.product_id]: item.id })); 
+            setWishlistMap(prevMap => ({ ...prevMap, [item.product_id]: item.id }));
             return item.product_id;
           });
           const updatedLikes = products.map(product => wishlistProductIds.includes(product.id));
-          setLikedProducts(updatedLikes); 
+          setLikedProducts(updatedLikes);
         } else {
           console.error("Failed to fetch wishlist");
         }
@@ -122,15 +124,23 @@ const Slider: React.FC<SliderProps> = ({ products, title, path }) => {
       });
 
       if (!response.ok) {
-        console.error("Failed to update wishlist");
-      } else if (isLiked) {
-        setWishlistMap(prevMap => {
-          const newMap = { ...prevMap };
-          delete newMap[productId];
-          return newMap;
+        setNotification({ message: "Failed to update wishlist", type: 'error' });
+      } else {
+        setNotification({
+          message: isLiked ? "Product removed from wishlist" : "Product added to wishlist",
+          type: 'success',
         });
+
+        if (isLiked) {
+          setWishlistMap(prevMap => {
+            const newMap = { ...prevMap };
+            delete newMap[productId];
+            return newMap;
+          });
+        }
       }
     } catch (error) {
+      setNotification({ message: "Error updating wishlist", type: 'error' });
       console.error("Error updating wishlist:", error);
     }
   };
@@ -183,6 +193,15 @@ const Slider: React.FC<SliderProps> = ({ products, title, path }) => {
           })}
         </div>
       </div>
+
+      {/* Notification component */}
+      {notification && (
+        <Notification
+          message={notification.message}
+          type={notification.type}
+          onClose={() => setNotification(null)}
+        />
+      )}
     </div>
   );
 };
