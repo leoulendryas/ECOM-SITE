@@ -4,6 +4,7 @@ import Button5 from '@/components/common/button/button-five/page';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import Breadcrumb from "@/components/common/breadCrumb/page";
+import Notification from '@/components/common/notification/page'; // Import notification component
 
 interface ProductImage {
   image_url: string;
@@ -31,6 +32,7 @@ interface Product {
 const ProductDetails: React.FC<{ product: Product }> = ({ product }) => {
   const userId = Cookies.get('userId');
   const [selectedColor, setSelectedColor] = useState<string>('Brown');
+  const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
   const router = useRouter();
 
   const imageSources = {
@@ -51,14 +53,14 @@ const ProductDetails: React.FC<{ product: Product }> = ({ product }) => {
 
   const addToCart = useCallback(async () => {
     if (!userId) {
-      alert('User ID is not found. Please log in.');
+      router.push('/auth');
       return;
     }
 
     const price = parseFloat(product.price);
 
     if (isNaN(price)) {
-      alert('Invalid price format.');
+      setNotification({ message: 'Invalid price format.', type: 'error' });
       return;
     }
 
@@ -77,16 +79,16 @@ const ProductDetails: React.FC<{ product: Product }> = ({ product }) => {
       });
 
       if (response.ok) {
-        console.log('Item added to cart');
+        setNotification({ message: 'Item added to cart!', type: 'success' });
       } else {
         const errorData = await response.json();
-        alert(`Error: ${errorData.message}`);
+        setNotification({ message: `Error: ${errorData.message}`, type: 'error' });
       }
     } catch (error) {
       console.error('Failed to add item to cart:', error);
-      alert('Failed to add item to cart. Please try again.');
+      setNotification({ message: 'Failed to add item to cart. Please try again.', type: 'error' });
     }
-  }, [product.id, product.price, userId]);
+  }, [product.id, product.price, router, userId]);
 
   const addToWishlist = useCallback(async () => {
     const token = Cookies.get('token');
@@ -107,13 +109,13 @@ const ProductDetails: React.FC<{ product: Product }> = ({ product }) => {
       });
 
       if (response.ok) {
-        console.log('Product added to wishlist!');
+        setNotification({ message: 'Product added to wishlist!', type: 'success' });
       } else {
-        console.error('Failed to add product to wishlist');
-        alert('Could not add product to wishlist. Please try again.');
+        setNotification({ message: 'Could not add product to wishlist. Please try again.', type: 'error' });
       }
     } catch (error) {
       console.error('Error adding product to wishlist:', error);
+      setNotification({ message: 'Error adding product to wishlist.', type: 'error' });
     }
   }, [product.id, router]);
 
@@ -167,7 +169,7 @@ const ProductDetails: React.FC<{ product: Product }> = ({ product }) => {
         <div className="w-full md:w-2/5 mt-0 md:ml-8 flex flex-col items-center">
           <h1 className="text-2xl lg:text-3xl font-semibold">{product.name}</h1>
           <p className="text-xl md:text-2xl mt-2 text-gray-700 font-medium">{product.size}</p>
-          <p className="text-xl md:text-2xl mt-2 font-medium">${product.price}</p>
+          <p className="text-xl md:text-2xl mt-2 font-medium">{product.price} Birr</p>
 
           <div className="flex mt-12">
             {colors.map((color) => (
@@ -198,9 +200,21 @@ const ProductDetails: React.FC<{ product: Product }> = ({ product }) => {
               <Button5 text="FAVORITE" onClick={addToWishlist} />
             </div>
           </div>
-          <p className="mt-12 text-lg text-gray">{product.description}</p>
+
+          <div className="text-sm lg:text-base text-center text-gray-600 mt-8">
+            {product.description}
+          </div>
         </div>
       </div>
+
+      {/* Display notification */}
+      {notification && (
+        <Notification
+          type={notification.type}
+          message={notification.message}
+          onClose={() => setNotification(null)}
+        />
+      )}
     </>
   );
 };

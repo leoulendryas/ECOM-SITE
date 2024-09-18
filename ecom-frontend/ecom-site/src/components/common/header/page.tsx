@@ -77,22 +77,35 @@ const Header: React.FC<HeaderProps> = ({ onCartToggle }) => {
       </nav>
 
       <div className="flex space-x-4 md:space-x-8">
-        <button className="hover:text-gray2">
+        <button className="relative group hover:text-gray2">
           <FaSearch size={14} />
         </button>
+            
         <Link href={`/wishlist`}>
-          <button className="hover:text-gray2">
+          <button className="relative group hover:text-gray2">
             <FaRegHeart size={14} />
+            <span className="absolute left-1/2 transform -translate-x-1/2 mt-1 hidden group-hover:block bg-gray-800 text-white text-xs px-2 rounded">
+              Wishlist
+            </span>
           </button>
         </Link>
+            
         <Link href={isAuthenticated ? '/profile' : '/auth'}>
-          <button className="hover:text-gray2">
+          <button className="relative group hover:text-gray2">
             <FaUser size={14} />
+            <span className="absolute left-1/2 transform -translate-x-1/2 mt-1 hidden group-hover:block bg-gray-800 text-white text-xs px-2 rounded">
+              Profile
+            </span>
           </button>
         </Link>
-        <button onClick={onCartToggle} className="hover:text-gray2">
+            
+        <button onClick={onCartToggle} className="relative group hover:text-gray2">
           <FaShoppingBag size={14} />
+          <span className="absolute left-1/2 transform -translate-x-1/2 mt-1 hidden group-hover:block bg-gray-800 text-white text-xs px-2 rounded">
+            Bag
+          </span>
         </button>
+            
         <button className="hover:text-gray2 md:hidden" onClick={toggleMenu}>
           <FaBars size={14} />
         </button>

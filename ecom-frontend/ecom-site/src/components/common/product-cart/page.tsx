@@ -1,8 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import { FiPlus } from 'react-icons/fi'; 
+import { FiPlus } from 'react-icons/fi';
 import ProductCard from '@/components/common/cart-product-card/page';
 import Button5 from '../button/button-five/page';
 import { FaTimes } from 'react-icons/fa';
+import Checkout from '@/components/checkout/page';
 
 interface CartItem {
   id: number;
@@ -24,53 +25,63 @@ interface CartDrawerProps {
 const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, cartItems }) => {
   const [detailedCartItems, setDetailedCartItems] = useState<CartItem[]>([]);
   const [subtotal, setSubtotal] = useState<number>(0);
+  const [isCheckoutOpen, setIsCheckoutOpen] = useState<boolean>(false);
 
   useEffect(() => {
+    const bodyOverflow = document.body.style.overflow;
     if (isOpen) {
       document.body.style.overflow = 'hidden';
-    } else {
-      document.body.style.overflow = '';
     }
     return () => {
-      document.body.style.overflow = '';
+      document.body.style.overflow = bodyOverflow;
     };
   }, [isOpen]);
 
   useEffect(() => {
     const fetchProductDetails = async () => {
-      const updatedItems = await Promise.all(cartItems.map(async (item) => {
-        try {
+      try {
+        const updatedItems = await Promise.all(cartItems.map(async (item) => {
           const response = await fetch(`/api/getSingleProduct/${item.product_id}`);
           if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
           const product = await response.json();
           return {
             ...item,
-            imageUrl: product.ProductImages[0]?.image_url || '/default-image.jpg', // Default image
-            name: product.name || 'Unnamed Product', // Default name
-            size: product.size || 'Unknown Size', // Default size
-            color: product.color || 'Unknown Color', // Default color
+            imageUrl: product.ProductImages[0]?.image_url || '/default-image.jpg',
+            name: product.name || 'Unnamed Product',
+            size: product.size || 'Unknown Size',
+            color: product.color || 'Unknown Color',
           };
-        } catch (error) {
-          console.error("Error fetching product details:", error);
-          return item;
-        }
-      }));
-      setDetailedCartItems(updatedItems);
-      
-      // Calculate subtotal
-      const newSubtotal = updatedItems.reduce((acc, item) => acc + parseFloat(item.price_at_time_of_addition) * item.quantity, 0);
-      setSubtotal(newSubtotal);
+        }));
+        setDetailedCartItems(updatedItems);
+      } catch (error) {
+        console.error("Error fetching product details:", error);
+      }
     };
 
     fetchProductDetails();
   }, [cartItems]);
 
+  useEffect(() => {
+    const newSubtotal = detailedCartItems.reduce((acc, item) => acc + parseFloat(item.price_at_time_of_addition) * item.quantity, 0);
+    setSubtotal(newSubtotal);
+  }, [detailedCartItems]);
+
   const handleRemoveItem = (id: number) => {
     setDetailedCartItems(prevItems => prevItems.filter(item => item.product_id !== id));
   };
 
-  const deliveryFee = 0; // Assuming free delivery for now
+  const deliveryFee = 0;
   const total = subtotal + deliveryFee;
+
+  const handleCheckout = () => {
+    setIsCheckoutOpen(true);
+  };
+
+  const transformedItems = detailedCartItems.map(item => ({
+    product_id: item.product_id,
+    quantity: item.quantity,
+    price: parseFloat(item.price_at_time_of_addition),
+  }));
 
   return (
     <>
@@ -84,13 +95,14 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, cartItems }) =
       <div
         className={`fixed top-0 right-0 h-full px-6 bg-white shadow-lg z-50 transform transition-transform duration-300 ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
-        } 
-        w-full lg:w-2/5 xl:w-1/3 2xl:w-1/4 overflow-y-auto`}
+        } w-full lg:w-2/5 xl:w-1/3 2xl:w-1/4 overflow-y-auto`}
+        id="cart-drawer"
+        tabIndex={-1}
       >
         <div className="p-4 max-h-full">
           <button onClick={onClose} className="text-black text-2xl"><FaTimes size={24} /></button>
           <h2 className="text-3xl font-medium my-4 text-center">Your Bag</h2>
-          
+
           {/* Promo Code Section */}
           <div className="mt-6 mb-10 flex justify-between items-center">
             <p className="text-lg">Do you have a promo code?</p>
@@ -109,9 +121,9 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, cartItems }) =
                 size={item.size || 'Unknown Size'}
                 color={item.color || 'Unknown Color'}
                 price={parseFloat(item.price_at_time_of_addition)}
-                quantity={item.quantity} // Pass quantity prop
-                id={item.id} // Pass productId prop
-                onRemove={handleRemoveItem} // Pass the remove function
+                quantity={item.quantity}
+                id={item.id}
+                onRemove={handleRemoveItem}
               />
             ))}
           </div>
@@ -123,15 +135,15 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, cartItems }) =
           <div className="space-y-2">
             <div className="flex justify-between text-gray">
               <span>Sub Total:</span>
-              <span>${subtotal.toFixed(2)}</span>
+              <span>{subtotal.toFixed(2)}Birr</span>
             </div>
             <div className="flex justify-between text-gray">
               <span>Delivery:</span>
-              <span>${deliveryFee.toFixed(2)}</span>
+              <span>{deliveryFee.toFixed(2)}Birr</span>
             </div>
             <div className="flex justify-between text-gray">
               <span>Total:</span>
-              <span>${total.toFixed(2)}</span>
+              <span>{total.toFixed(2)}Birr</span>
             </div>
           </div>
 
@@ -140,10 +152,21 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, cartItems }) =
 
           {/* Checkout Button */}
           <div className="w-full py-2 my-10 pb-10 text-center">
-            <Button5 text="CHECK OUT" />
+            <Button5 text="CHECK OUT" onClick={handleCheckout} />
           </div>
         </div>
       </div>
+
+      {/* Conditionally Render Checkout Component */}
+      {isCheckoutOpen && (
+        <div className="fixed inset-0 z-50 bg-white">
+          <Checkout 
+            subtotal={subtotal} 
+            deliveryFee={deliveryFee} 
+            items={transformedItems}
+          />
+        </div>
+      )}
     </>
   );
 };

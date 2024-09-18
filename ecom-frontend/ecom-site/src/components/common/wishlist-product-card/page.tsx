@@ -75,7 +75,7 @@ const ProductCard: React.FC<ProductCardProps> = ({
                 </h2>
                 <p className="text-base font-normal text-gray">{size}</p>
                 <p className="text-base font-normal text-gray">{color}</p>
-                <p className="text-base font-semibold mt-2">${price.toFixed(2)}</p>
+                <p className="text-base font-semibold mt-2">{price.toFixed(2)} Birr</p>
             </div>
         </div>
     );

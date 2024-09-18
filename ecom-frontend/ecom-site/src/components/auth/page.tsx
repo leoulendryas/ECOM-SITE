@@ -171,6 +171,7 @@ const AuthPage = () => {
                 value={formData.email}
                 onChange={handleChange}
                 className="w-full p-2 sm:p-3 bg-lightGray text-gray rounded-xl mb-4 sm:mb-6 text-sm sm:text-lg focus:outline-none"
+                required
               />
               <input
                 type="password"
@@ -179,6 +180,7 @@ const AuthPage = () => {
                 value={formData.password}
                 onChange={handleChange}
                 className="w-full p-2 sm:p-3 bg-lightGray rounded-xl mb-2 sm:mb-2 text-sm sm:text-lg focus:outline-none"
+                required
               />
               <div className="text-left text-primary text-sm mb-3 sm:mb-4">
                 <a href="#">Forgot your password?</a>
@@ -196,6 +198,7 @@ const AuthPage = () => {
                 value={formData.first_name}
                 onChange={handleChange}
                 className="w-full p-2 sm:p-3 bg-lightGray rounded-xl mb-4 sm:mb-6 text-sm sm:text-lg focus:outline-none"
+                required
               />
               <input
                 type="text"
@@ -204,6 +207,7 @@ const AuthPage = () => {
                 value={formData.last_name}
                 onChange={handleChange}
                 className="w-full p-2 sm:p-3 bg-lightGray rounded-xl mb-4 sm:mb-6 text-sm sm:text-lg focus:outline-none"
+                required
               />
               <input
                 type="text"
@@ -212,6 +216,7 @@ const AuthPage = () => {
                 value={formData.phone_number}
                 onChange={handleChange}
                 className="w-full p-2 sm:p-3 bg-lightGray rounded-xl mb-4 sm:mb-6 text-sm sm:text-lg focus:outline-none"
+                required
               />
               <input
                 type="email"
@@ -220,6 +225,7 @@ const AuthPage = () => {
                 value={formData.email}
                 onChange={handleChange}
                 className="w-full p-2 sm:p-3 bg-lightGray rounded-xl mb-4 sm:mb-6 text-sm sm:text-lg focus:outline-none"
+                required
               />
               <input
                 type="password"
@@ -228,6 +234,7 @@ const AuthPage = () => {
                 value={formData.password}
                 onChange={handleChange}
                 className="w-full p-2 sm:p-3 bg-lightGray rounded-xl mb46 sm:mb-6 text-sm sm:text-lg focus:outline-none"
+                required
               />
               <div className="flex items- space-x-2 mb-3 sm:mb-4">
                 <input type="checkbox" id="signup-checkbox" className="h-4 w-4 sm:h-5 sm:w-5 text-gray" />
