@@ -49,16 +49,20 @@ const AccountPage: React.FC = () => {
     };
 
     const fetchOrder = async () => {
-      try {
-        const response = await fetch(`/api/getOrders/${orderId}`);
-        if (!response.ok) {
-          throw new Error('Failed to fetch order');
+      if (orderId) {
+        try {
+          const response = await fetch(`/api/getOrders/${orderId}`);
+          if (!response.ok) {
+            throw new Error('Failed to fetch order');
+          }
+          const data = await response.json();
+          setOrder(data);
+        } catch (error) {
+          setNotification({ message: 'Error fetching order details', type: 'error' });
+          console.error('Error fetching order:', error);
         }
-        const data = await response.json();
-        setOrder(data);
-      } catch (error) {
-        setNotification({ message: 'Error fetching order details', type: 'error' });
-        console.error('Error fetching order:', error);
+      } else {
+        setNotification({ message: 'No recent order found', type: 'info' });
       }
     };
 
@@ -126,12 +130,12 @@ const AccountPage: React.FC = () => {
         />
       )}
       
-      <div className="bg-lightGray rounded-lg p-6 mb-6">
+      <div className="bg-gray rounded-2xl p-6 mb-6">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-4 sm:space-y-0">
           <div className="space-y-2">
-            <h2 className="text-lg font-semibold">{`${userInfo.first_name} ${userInfo.last_name}`}</h2>
-            <p className="text-black">{userInfo.email}</p>
-            <p className="text-black">{userInfo.phone_number}</p>
+            <h2 className="text-lg font-semibold text-white">{`${userInfo.first_name} ${userInfo.last_name}`}</h2>
+            <p className="text-white">{userInfo.email}</p>
+            <p className="text-white">{userInfo.phone_number}</p>
           </div>
           <div className="flex space-x-4">
             <div onClick={handleEdit}>

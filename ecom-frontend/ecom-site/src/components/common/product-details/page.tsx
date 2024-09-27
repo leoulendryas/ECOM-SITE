@@ -4,11 +4,13 @@ import Button5 from '@/components/common/button/button-five/page';
 import Cookies from 'js-cookie';
 import { useRouter } from 'next/navigation';
 import Breadcrumb from "@/components/common/breadCrumb/page";
-import Notification from '@/components/common/notification/page'; // Import notification component
+import Notification from '@/components/common/notification/page';
 
 interface ProductImage {
+  id: number;
   image_url: string;
   position: string;
+  position_sequence: number;
 }
 
 interface Product {
@@ -21,15 +23,13 @@ interface Product {
   price: string;
   is_featured: boolean;
   is_new: boolean;
-  gender: string;
+  gender: string | null;
   ProductImages: ProductImage[];
-  Category: {
-    id: number;
-    name: string;
-  };
+  category_id: number;
 }
 
 const ProductDetails: React.FC<{ product: Product }> = ({ product }) => {
+  const [fetchedProducts, setFetchedProducts] = useState<Product[]>([]); // Use array if API returns multiple products
   const userId = Cookies.get('userId');
   const [selectedColor, setSelectedColor] = useState<string>('Brown');
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -43,13 +43,23 @@ const ProductDetails: React.FC<{ product: Product }> = ({ product }) => {
     other: product.ProductImages.find((img) => img.position === 'other')?.image_url || '',
   };
 
-  const colors = [
-    { name: 'Brown', hex: '#A52A2A' },
-    { name: 'Gray', hex: '#808080' },
-    { name: 'Black', hex: '#000000' },
-    { name: 'Navy', hex: '#000080' },
-    { name: 'Green', hex: '#32A852' },
-  ];
+  useEffect(() => {
+    const fetchProductsByName = async () => {
+      try {
+        const response = await fetch(`/api/getProductByName?name=${product.name}`);
+        if (response.ok) {
+          const data: Product[] = await response.json(); // Assuming the API returns an array
+          setFetchedProducts(data); // Assuming the API returns an array
+        } else {
+          console.error('Failed to fetch products');
+        }
+      } catch (error) {
+        console.error('Error fetching products:', error);
+      }
+    };
+
+    fetchProductsByName();
+  }, [product.name]);
 
   const addToCart = useCallback(async () => {
     if (!userId) {
@@ -140,6 +150,10 @@ const ProductDetails: React.FC<{ product: Product }> = ({ product }) => {
     { label: `${product.name}` },
   ];  
 
+  const handleProductClick = (productId: number) => {
+    window.location.href = `/product/${productId}`;
+  };
+
   return (
     <>
       <Breadcrumb items={breadcrumbItems} />
@@ -171,18 +185,27 @@ const ProductDetails: React.FC<{ product: Product }> = ({ product }) => {
           <p className="text-xl md:text-2xl mt-2 text-gray-700 font-medium">{product.size}</p>
           <p className="text-xl md:text-2xl mt-2 font-medium">{product.price} Birr</p>
 
-          <div className="flex mt-12">
-            {colors.map((color) => (
-              <div
-                key={color.name}
-                className={`h-8 lg:h-10 lg:w-10 w-8 mr-2 cursor-pointer rounded-full border ${
-                  selectedColor === color.name ? 'border-black' : 'border-transparent'
-                }`}
-                style={{ backgroundColor: color.hex }}
-                onClick={() => setSelectedColor(color.name)}
-                aria-label={`Select ${color.name}`}
-              ></div>
-            ))}
+          <div className="flex flex-col w-full md:w-3/5 items-center mt-12">
+            <div className="flex flex-wrap gap-2">
+              {fetchedProducts.map((fetchedProduct, index) =>
+                fetchedProduct.ProductImages
+                  .filter((image) => image.position === 'front' && image.image_url !== imageSources.front)
+                  .map((image, imgIndex) => (
+                    <div
+                      key={`${index}-${imgIndex}`}
+                      className="h-14 w-14 rounded-full relative bg-gray-300 overflow-hidden cursor-pointer transition-transform duration-300 ease-in-out transform hover:scale-110"
+                      onClick={() => handleProductClick(fetchedProduct.id)}
+                    >
+                      <Image
+                        src={image.image_url}
+                        alt={`${fetchedProduct.name} - ${image.position}`}
+                        layout="fill"
+                        objectFit="cover"
+                      />
+                    </div>
+                  ))
+              )}
+            </div>
           </div>
 
           <div className="flex mt-12">
