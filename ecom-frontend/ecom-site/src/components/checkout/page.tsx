@@ -105,7 +105,7 @@ const Checkout: React.FC<CheckoutProps> = ({ subtotal, deliveryFee, items }) => 
                 value={address}
                 onChange={(e) => setAddress(e.target.value)}
                 className="w-full p-2 border border-gray-300 rounded-md"
-                placeholder="Enter your address"
+                placeholder="Enter your address. Ex-Bole Bulbula"
                 required
               />
             </div>

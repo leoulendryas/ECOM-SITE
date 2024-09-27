@@ -8,7 +8,6 @@ exports.createProduct = async (req, res) => {
   try {
     const { ProductImages, ...productData } = req.body;
 
-    // Create product along with its images
     const product = await Product.create(
       { 
         ...productData, 
@@ -25,7 +24,7 @@ exports.createProduct = async (req, res) => {
   }
 };
 
-// Get all products with images and filtering options
+// Get all products with images and filtering options (UNCHANGED)
 exports.getAllProducts = async (req, res) => {
   try {
     const filters = {
@@ -36,8 +35,8 @@ exports.getAllProducts = async (req, res) => {
       priceMin: req.query.priceMin,
       priceMax: req.query.priceMax,
       gender: req.query.gender,
-      isNew: req.query.isNew,        // Capture 'isNew' filter
-      isFeatured: req.query.isFeatured // Capture 'isFeatured' filter
+      isNew: req.query.isNew,
+      isFeatured: req.query.isFeatured
     };
 
     const products = await filterProducts(filters);
@@ -47,13 +46,40 @@ exports.getAllProducts = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
+
+// Get products by name (NEW METHOD)
+exports.getProductsByName = async (req, res) => {
+  try {
+    const { name } = req.query;
+
+    if (!name) {
+      return res.status(400).json({ error: 'Name query parameter is required' });
+    }
+
+    const products = await Product.findAll({
+      where: { name },
+      include: [
+        { model: ProductImage }
+      ]
+    });
+
+    if (products.length === 0) {
+      return res.status(404).json({ message: 'No products found with the given name' });
+    }
+
+    res.status(200).json(products);
+  } catch (error) {
+    res.status(400).json({ error: error.message });
+  }
+};
+
 // Get product by ID with images
 exports.getProductById = async (req, res) => {
   try {
     const product = await Product.findByPk(req.params.id, {
       include: [
-        { model: models.Category },  // Include associated Category
-        { model: models.ProductImage }  // Include associated ProductImages
+        { model: models.Category },
+        { model: models.ProductImage }
       ]
     });
 
@@ -78,11 +104,9 @@ exports.updateProduct = async (req, res) => {
 
     const { ProductImages, ...productData } = req.body;
 
-    // Update product and associated images
     await product.update(productData);
 
     if (ProductImages && ProductImages.length > 0) {
-      // Replace old images with new ones (you can adjust logic as needed)
       await ProductImage.destroy({ where: { product_id: product.id } });
       await ProductImage.bulkCreate(
         ProductImages.map(img => ({ ...img, product_id: product.id }))
