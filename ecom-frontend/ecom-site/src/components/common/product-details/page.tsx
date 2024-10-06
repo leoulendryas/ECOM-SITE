@@ -13,23 +13,34 @@ interface ProductImage {
   position_sequence: number;
 }
 
+interface Size {
+  id: number;
+  size: string;
+}
+
+interface Fit {
+  id: number;
+  fit: string;
+}
+
 interface Product {
   id: number;
   name: string;
   description: string;
-  size: string;
   color: string;
-  fit: string;
   price: string;
   is_featured: boolean;
   is_new: boolean;
   gender: string | null;
   ProductImages: ProductImage[];
   category_id: number;
+  Sizes: Size[];
+  Fits: Fit[];
 }
 
 const ProductDetails: React.FC<{ product: Product }> = ({ product }) => {
-  const [fetchedProducts, setFetchedProducts] = useState<Product[]>([]); // Use array if API returns multiple products
+  const [fetchedProducts, setFetchedProducts] = useState<Product[]>([]); 
+  const [selectedSize, setSelectedSize] = useState<string | null>(null); 
   const userId = Cookies.get('userId');
   const [selectedColor, setSelectedColor] = useState<string>('Brown');
   const [notification, setNotification] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
@@ -66,6 +77,11 @@ const ProductDetails: React.FC<{ product: Product }> = ({ product }) => {
       router.push('/auth');
       return;
     }
+    
+    if (!selectedSize) {
+      setNotification({ message: 'Please select a size.', type: 'error' });
+      return;
+    }
 
     const price = parseFloat(product.price);
 
@@ -83,6 +99,7 @@ const ProductDetails: React.FC<{ product: Product }> = ({ product }) => {
         body: JSON.stringify({
           cart_id: userId,
           product_id: product.id,
+          size: selectedSize,
           quantity: 1,
           price_at_time_of_addition: price,
         }),
@@ -98,7 +115,7 @@ const ProductDetails: React.FC<{ product: Product }> = ({ product }) => {
       console.error('Failed to add item to cart:', error);
       setNotification({ message: 'Failed to add item to cart. Please try again.', type: 'error' });
     }
-  }, [product.id, product.price, router, userId]);
+  }, [product.id, product.price, router, userId, selectedSize]);
 
   const addToWishlist = useCallback(async () => {
     const token = Cookies.get('token');
@@ -159,30 +176,75 @@ const ProductDetails: React.FC<{ product: Product }> = ({ product }) => {
       <Breadcrumb items={breadcrumbItems} />
       <div className="flex flex-col md:flex-row px-4 md:px-20">
         <div className="flex flex-col w-full md:w-3/5">
-          <div className="grid grid-cols-2">
-            <div className="h-48 md:h-96 relative bg-gray-300 overflow-hidden">
-              <Image src={imageSources.front} alt="Front View" layout="fill" objectFit="cover" />
+          <div className="grid grid-cols-2 gap-1">
+            <div className="relative bg-gray-300 overflow-hidden w-full">
+              {imageSources.front ? (
+                <Image
+                  src={imageSources.front}
+                  alt="Front View"
+                  layout="intrinsic"
+                  objectFit="contain"
+                  width={577.4}
+                  height={500}
+                />
+              ) : null}
             </div>
-            <div className="h-48 md:h-96 relative bg-gray-300 overflow-hidden">
-              <Image src={imageSources.back} alt="Back View" layout="fill" objectFit="cover" />
+            <div className="relative bg-gray-300 overflow-hidden w-full">
+              {imageSources.back ? (
+                <Image
+                  src={imageSources.back}
+                  alt="Back View"
+                  layout="intrinsic"
+                  objectFit="contain"
+                  width={577.4}
+                  height={500}
+                />
+              ) : null}
             </div>
           </div>
-          <div className="h-64 md:h-96 relative bg-gray-300 overflow-hidden">
-            <Image src={imageSources.other} alt="Other View" layout="fill" objectFit="cover" />
+          <div className="col-span-2 relative bg-gray-300 overflow-hidden w-full mt-1 mb-1">
+            {imageSources.other ? (
+              <Image
+                src={imageSources.other}
+                alt="Other View"
+                layout="intrinsic"
+                objectFit="contain"
+                width={1154.81}
+                height={500}
+              />
+            ) : null}
           </div>
-          <div className="grid grid-cols-2">
-            <div className="h-48 md:h-96 relative bg-gray-300 overflow-hidden">
-              <Image src={imageSources.left} alt="Left View" layout="fill" objectFit="cover" />
+          <div className="grid grid-cols-2 gap-1">
+            <div className="relative bg-gray-300 overflow-hidden w-full">
+              {imageSources.left ? (
+                <Image
+                  src={imageSources.left}
+                  alt="Left View"
+                  layout="intrinsic"
+                  objectFit="contain"
+                  width={577.4}
+                  height={500}
+                />
+              ) : null}
             </div>
-            <div className="h-48 md:h-96 relative bg-gray-300 overflow-hidden">
-              <Image src={imageSources.right} alt="Right View" layout="fill" objectFit="cover" />
+            <div className="relative bg-gray-300 overflow-hidden w-full">
+              {imageSources.right ? (
+                <Image
+                  src={imageSources.right}
+                  alt="Right View"
+                  layout="intrinsic"
+                  objectFit="contain"
+                  width={577.4}
+                  height={500}
+                />
+              ) : null}
             </div>
           </div>
         </div>
 
         <div className="w-full md:w-2/5 mt-0 md:ml-8 flex flex-col items-center">
           <h1 className="text-2xl lg:text-3xl font-semibold">{product.name}</h1>
-          <p className="text-xl md:text-2xl mt-2 text-gray-700 font-medium">{product.size}</p>
+          <p className="text-xl md:text-2xl mt-2 text-gray font-medium">{product.color}</p>
           <p className="text-xl md:text-2xl mt-2 font-medium">{product.price} Birr</p>
 
           <div className="flex flex-col w-full md:w-3/5 items-center mt-12">
@@ -208,13 +270,20 @@ const ProductDetails: React.FC<{ product: Product }> = ({ product }) => {
             </div>
           </div>
 
-          <div className="flex mt-12">
-            <button className="border border-gray-300 rounded px-3 py-1 mx-1 lg:px-4 lg:py-2">XS</button>
-            <button className="border border-gray-300 rounded px-3 py-1 mx-1 lg:px-4 lg:py-2">S</button>
-            <button className="border border-gray-300 rounded px-3 py-1 mx-1 lg:px-4 lg:py-2">M</button>
-            <button className="border border-gray-300 rounded px-3 py-1 mx-1 lg:px-4 lg:py-2">L</button>
-            <button className="border border-gray-300 rounded px-3 py-1 mx-1 lg:px-4 lg:py-2">XL</button>
-            <button className="border border-gray-300 rounded px-3 py-1 mx-1 lg:px-4 lg:py-2">XXL</button>
+          <div className="mt-12">
+            <div className="flex">
+              {product.Sizes.map((size) => (
+                <button
+                  key={size.id}
+                  className={`border border-gray-300 rounded px-3 py-1 mx-1 lg:px-4 lg:py-2 hover:bg-gray hover:text-white ${
+                    selectedSize === size.size ? 'bg-gray' : ''
+                  }`}
+                  onClick={() => setSelectedSize(size.size)}
+                >
+                  {size.size}
+                </button>
+              ))}
+            </div>
           </div>
 
           <div className="flex mt-12">

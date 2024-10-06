@@ -85,8 +85,8 @@ const ProductCard: React.FC<ProductCardProps> = ({
           {/* Product Information */}
           <div>
             <h2 className="text-base font-normal">{name || 'Unnamed Product'}</h2>
-            <p className="text-base font-normal text-gray-500">Size: {size || 'Unknown Size'}</p>
-            <p className="text-base font-normal text-gray-500">Color: {color || 'Unknown Color'}</p>
+            <p className="text-base font-normal text-gray">{size || 'Unknown Size'}</p>
+            <p className="text-base font-normal text-gray">{color || 'Unknown Color'}</p>
             <p className="text-base font-semibold mt-2">{price.toFixed(2)}Birr</p>
           </div>
 

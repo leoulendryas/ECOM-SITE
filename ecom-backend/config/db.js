@@ -18,7 +18,6 @@ const sequelize = new Sequelize(
   }
 );
 
-
 const models = {
   Cart: require('../models/cart')(sequelize, Sequelize.DataTypes),
   CartItem: require('../models/cartItem')(sequelize, Sequelize.DataTypes),
@@ -29,6 +28,8 @@ const models = {
   Product: require('../models/product')(sequelize, Sequelize.DataTypes),
   ProductImage: require('../models/productImage')(sequelize, Sequelize.DataTypes),
   SaleProduct: require('../models/saleProduct')(sequelize, Sequelize.DataTypes),
+  Size: require('../models/size')(sequelize, Sequelize.DataTypes),   // Add Size model here
+  Fit: require('../models/fit')(sequelize, Sequelize.DataTypes),     // Add Fit model here
   User: require('../models/user')(sequelize, Sequelize.DataTypes),
   Wishlist: require('../models/wishlist')(sequelize, Sequelize.DataTypes),
 };

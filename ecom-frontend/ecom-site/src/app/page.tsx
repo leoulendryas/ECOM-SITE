@@ -23,7 +23,7 @@ export default function Home() {
   useEffect(() => {
     const fetchNewProducts = async () => {
       try {
-        const response = await fetch("/api/filteredProducts?isNew=true");
+        const response = await fetch("/api/filteredProducts?is_new=true");
         const data = await response.json();
         setNewProducts(
           data.map((product: any) => ({

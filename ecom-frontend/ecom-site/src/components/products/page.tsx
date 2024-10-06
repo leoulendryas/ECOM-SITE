@@ -7,6 +7,7 @@ import FilterSection from "@/components/common/filter/page";
 import Button5 from "@/components/common/button/button-five/page";
 import Breadcrumb from "@/components/common/breadCrumb/page";
 import Notification from "@/components/common/notification/page";
+import React from "react";
 
 const useWishlist = () => {
   const [wishlist, setWishlist] = useState<

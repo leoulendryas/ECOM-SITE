@@ -8,8 +8,8 @@ export default function Products() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<null | string>(null);
   const [filters, setFilters] = useState({
-    isNew: "true",
-    isFeatured: "true"
+    is_new: "true",
+    is_featured: "true"
   });
 
   useEffect(() => {
