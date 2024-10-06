@@ -7,7 +7,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
       return res.status(405).json({ message: 'Method Not Allowed' });
     }
 
-    const { product_id, quantity, price_at_time_of_addition , cart_id} = req.body;
+    const { product_id, quantity, price_at_time_of_addition , cart_id, size} = req.body;
 
     if (!product_id || !quantity || !price_at_time_of_addition) {
       return res.status(400).json({ message: 'Product ID, quantity, and price are required' });
@@ -23,6 +23,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         product_id,
         quantity,
         price_at_time_of_addition,
+        size,
       }),
     });
 

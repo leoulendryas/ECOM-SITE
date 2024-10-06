@@ -7,23 +7,24 @@ const CartItem = models.CartItem;
 // Create an order
 exports.createOrder = async (req, res) => {
   const t = await sequelize.transaction();
-  
+
   try {
     // Create the order
     const order = await Order.create(req.body, { transaction: t });
-    
-    // Create the order items
+
+    // Create the order items, including size
     const orderItems = req.body.items.map(item => ({
       order_id: order.id,
       product_id: item.product_id,
       quantity: item.quantity,
       price: item.price,
+      size: item.size, // Include size here
     }));
     await OrderItem.bulkCreate(orderItems, { transaction: t });
 
     // Empty the cart
     await CartItem.destroy({ where: { cart_id: req.body.cart_id }, transaction: t });
-    
+
     // Commit transaction
     await t.commit();
 
@@ -34,7 +35,6 @@ exports.createOrder = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-
 
 // Get all orders
 exports.getAllOrders = async (req, res) => {
@@ -90,4 +90,3 @@ exports.deleteOrder = async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 };
-

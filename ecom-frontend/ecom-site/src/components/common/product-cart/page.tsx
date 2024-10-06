@@ -48,7 +48,6 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, cartItems }) =
             ...item,
             imageUrl: product.ProductImages[0]?.image_url || '/default-image.jpg',
             name: product.name || 'Unnamed Product',
-            size: product.size || 'Unknown Size',
             color: product.color || 'Unknown Color',
           };
         }));
@@ -80,6 +79,7 @@ const CartDrawer: React.FC<CartDrawerProps> = ({ isOpen, onClose, cartItems }) =
   const transformedItems = detailedCartItems.map(item => ({
     product_id: item.product_id,
     quantity: item.quantity,
+    size: item.size,
     price: parseFloat(item.price_at_time_of_addition),
   }));
 

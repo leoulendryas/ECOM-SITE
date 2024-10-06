@@ -31,21 +31,44 @@ exports.getCartByUserId = async (req, res) => {
 // Add item to cart
 exports.addItemToCart = async (req, res) => {
   try {
-    const cartItem = await CartItem.create(req.body);
+    const { cart_id, product_id, quantity, price_at_time_of_addition, size } = req.body;
+
+    // Validate required fields
+    if (!size) {
+      return res.status(400).json({ error: 'Size is required' });
+    }
+
+    const cartItem = await CartItem.create({
+      cart_id,
+      product_id,
+      quantity,
+      price_at_time_of_addition,
+      size, // Include size
+    });
+
     res.status(201).json(cartItem);
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
 };
 
-// Update cart item quantity
+// Update cart item (quantity and size)
 exports.updateCartItem = async (req, res) => {
   try {
     const cartItem = await CartItem.findByPk(req.params.id);
     if (!cartItem) {
       return res.status(404).json({ error: 'Cart item not found' });
     }
-    await cartItem.update(req.body);
+
+    const { quantity, size } = req.body;
+
+    // Validate required fields
+    if (!size) {
+      return res.status(400).json({ error: 'Size is required' });
+    }
+
+    await cartItem.update({ quantity, size });
+
     res.status(200).json(cartItem);
   } catch (error) {
     res.status(400).json({ error: error.message });
